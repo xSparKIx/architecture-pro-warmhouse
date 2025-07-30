@@ -1,0 +1,4 @@
+@startuml Telemetry components diagram
+title Диаграмма компонентов системы телеметрии
+
+@endmul

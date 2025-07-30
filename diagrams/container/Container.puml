@@ -1,0 +1,82 @@
+@startuml Container diagram
+title Диаграмма контейнеров "Тёплый дом"
+
+top to bottom direction
+
+!include ../templates/C4_Container.puml
+
+' -----------------
+' Внешние сущности
+' -----------------
+
+Person(user, "Пользователь", "Пользователь умного дома")
+Person(support, "Команда поддержки", "Команда по обслуживанию клиентов")
+Person(manager, "Команда продажи", "Команда по продажам и маркетингу")
+
+System_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
+
+' --------
+' Системы
+' --------
+
+System_Boundary(SmartHomeSystem, "Система управления умным домом") {
+    Container(WebApp, "Веб-приложение", "JavaScript и выбранный фреймворк", "Веб-интерфейс для управления умным домом")
+
+    Container(ApiApplication, "Api Application", "GoLang 1.22", "Обрабатывает запросы пользователей")
+
+    ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию об устройствах, пользователях и телеметрии")
+
+    Container(broker, "Брокер сообщений", "Kafka", "Пропускает через себя данные о телеметрии")
+
+    Container(streams, "Обработчик (Библиотека)", "Kafka Streams", "Обрабатывает потоки и агрегирует данные в режиме реального времени")
+
+    System_Boundary(DevicesSystem, "Управление устройствами") {
+        Container(DeivecesAdminSystem, "Система администрирования устройств", "NodeJS", "Управляет подключением устройств к систему умного дома")
+    }
+
+    System_Boundary(TelemetrySystem, "Управление телеметрией") {
+        Container(TelemetryReceivingSystem, "Система получения телеметрии", "NodeJS", "Получает информацию о телеметрии устройств пользователя")
+    }
+
+    System_Boundary(MonitoringSystem, "Мониторинг умного дома") {
+        Container(AnaliticSystem, "Система мониторинга", "NodeJS", "Формирует отчеты и аналитику по подключенным устройствам пользователей")
+    }
+
+    System_Boundary(UsersSystem, "Управление пользователями") {
+        Container(UsersAdminSystem, "Система администрирования пользователей", "NodeJS", "Предоставляет функционал администрирования пользователей")
+        Container(UsersAnalyticSystem, "Система мониторинга пользователей", "NodeJS", "Формирует отчеты и аналитику по пользователям")
+    }
+}
+
+' --------------
+' Потоки данных
+' --------------
+
+' Связи пользователей
+Rel(user, WebApp, "Использует для управления умным домом")
+Rel(support, WebApp, "Использует для управления пользователями и их оборудованием")
+Rel(manager, WebApp, "Использует для получения информации о пользователях и их оборудовании")
+
+' Связи интерфейсов с API
+Rel(WebApp, ApiApplication, "Выполняет вызовы Api")
+
+' Связи API
+Rel(ApiApplication, DeivecesAdminSystem, "Запросы управления устройствами", "JSON")
+Rel(ApiApplication, db, "Обновляет информацию об умном доме и пользователях")
+Rel(ApiApplication, AnaliticSystem, "Запросы на формирование отчетов и аналитики", "JSON")
+Rel(ApiApplication, broker, "Запросы получения телеметрии", "JSON")
+Rel(ApiApplication, UsersAdminSystem, "Запросы администрирования пользователей", "JSON")
+Rel(ApiApplication, UsersAnalyticSystem, "Запросы на формирование отчетов и аналитики о пользователях", "JSON")
+
+' Связи брокера сообщений
+Rel(broker, TelemetryReceivingSystem, "Запросы получения телеметрии", "JSON")
+Rel(broker, streams, "Потоки для обработки", "Stream")
+Rel(broker, AnaliticSystem, "Данные для обработки в реальном времени", "Stream")
+
+' Связи системы управления устройствами
+Rel(DeivecesAdminSystem, UserDevicesSystem, "Управляет утройствами и получает информацию о них")
+
+' Связи системы управления телеметрией
+Rel(TelemetryReceivingSystem, UserDevicesSystem, "Получает информацию от устойств умного дома пользователя")
+
+@enduml
