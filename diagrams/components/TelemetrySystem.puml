@@ -1,4 +1,21 @@
 @startuml Telemetry components diagram
 title Диаграмма компонентов системы телеметрии
 
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(ApiApplication, "Api Application", "Обрабатывает запросы пользователей")
+Container_Ext(devices, "Устройсва умного дома пользователя")
+
+' Система
+Container_Boundary(DevicesAdminSystem, "Система администрирования устройств", "NodeJS") {
+    Component(TelemetryController, "Контроллер телеметрии")
+    Component(TelemetryService, "Компонент телеметрии")
+}
+
+' Связи
+Rel(ApiApplication, TelemetryController, "Вызывает апи администрирования устройств")
+Rel(TelemetryController, TelemetryService, "Вызывает методы сервиса")
+Rel(TelemetryService, devices, "Вызывает методы сервиса")
+
 @endmul
