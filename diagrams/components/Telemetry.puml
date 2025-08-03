@@ -29,13 +29,8 @@ Rel(TelemetryService, TelemetryComponent, "Читает/записывает д�
 Rel(TelemetryComponent, broker, "Данные о телеметрии")
 Rel(TelemetryComponent, UserDevicesSystem, "Данные о телеметрии")
 
-' @todo Перепроверить и еще вопрос обязательно ли реализовывать отдельный контроллер записи
-' @todo Перепрвоерить, вполне возможно тут должна быть нисходящая связь и компонент записи должен связаны быть с брокером,
-' а не выше
-' @todo Тут еще надо предусмотреть что телеметрия должна вооюще постоянно собираться или сделать чтобы она собиралась по необходимости
-' когда пользователь смотрит, но нет сценарии должны постоянно же обрабатываться
 Rel(APIGateway, TelemetryWriteController, "Делает запросы на запись телеметрии")
-Rel(broker, TelemetryWriteService, "Обновление данных телеметрии")
+Rel(broker, TelemetryWriteController, "Обновление данных телеметрии")
 Rel(TelemetryWriteController, TelemetryWriteService, "Вызывает бизнес-логику")
 Rel(TelemetryWriteService, TelemetryWriteComponent, "Читает/записывает/удаляет данные о телеметрии")
 Rel(TelemetryWriteComponent, db, "Данные о телеметрии")

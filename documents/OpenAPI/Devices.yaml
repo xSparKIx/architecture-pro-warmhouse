@@ -1,5 +1,3 @@
-# @todo Возможно сделать устройство через AsyncApi, так как нам возможно надо уведомлять всех о добавлении нового устройства
-# @todo Либо сделать только часть через AsyncApi
 openapi: 3.1.0
 info:
   title: API управления устройствами
@@ -12,145 +10,635 @@ servers:
 tags:
   - name: Devices
     description: Управление устройствами
-  - name: DevicesFunctions
-    description: Управление функциями устройств
+  - name: DeviceFunctionality
+    description: Управление функционалом устройств
   - name: Modules
     description: Управление модулями
+  - name: DeviceModuleBinding
+    description: Привязка устройств к модулям
 
 paths:
-  # ====================== УСТРОЙСТВА ======================
+  # Управление устройствами
   /devices:
     get:
       tags: [Devices]
-      summary: Список всех устройств
-      security:
-        - BearerAuth: []
+      summary: Получить список устройств
       responses:
         200:
-          description: OK
+          description: Список устройств
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Device"
+                  $ref: '#/components/schemas/Device'
     post:
       tags: [Devices]
-      summary: Создание устройства
+      summary: Создать новое устройство
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DeviceRequest"
+              $ref: '#/components/schemas/DeviceCreate'
       responses:
-        200:
-          description: Устройство успешно создано
+        201:
+          description: Устройство создано
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Device"
-        401:
+                $ref: '#/components/schemas/Device'
+        400:
           description: Переданы некорректные данные
+        500:
+          description: Во время выполнения произошла ошибка
 
-  /devices/{id}:
-    parameters:
-        - name: id
+  /devices/{deviceId}:
+    get:
+      tags: [Devices]
+      summary: Получить информацию об устройстве
+      parameters:
+        - name: deviceId
           in: path
           required: true
-          description: uuid устройства
           schema:
             type: string
             format: uuid
-    get:
-      tags: [Devices]
-      summary: Получение устройства по uuid
-      security:
-        - BearerAuth: []
       responses:
         200:
-          description: OK
+          description: Информация об устройстве
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Device"
+                $ref: '#/components/schemas/Device'
+        400:
+          description: Передан некорректный идентификатор устройсва
         404:
-          description: Устройство с заданным UUID найдено не было
+          description: Устройство с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
     put:
       tags: [Devices]
-      summary: Обновление устройства
+      summary: Обновить информацию об устройстве
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DeviceRequest"
+              $ref: '#/components/schemas/DeviceUpdate'
       responses:
         200:
-          description: Устройство успешно обновлено
+          description: Информация об устройстве обновлена
+        400:
+          description: Переданы некорректные данные
+        404:
+          description: Устройство с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+    delete:
+      tags: [Devices]
+      summary: Удалить устройство
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Устройство удалено
+        400:
+          description: Передан некорректный идентификатор устройсва
+        404:
+          description: Устройство с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+
+  # Управление функционалом устройств
+  /devices/{deviceId}/functionality:
+    get:
+      tags: [DeviceFunctionality]
+      summary: Получить список функционала устройства
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Список функционала устройства
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Device"
-        401:
-          description: Переданы некорректные данные
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceFunctionality'
+        400:
+          description: Передан некорректный идентификатор устройсва
         404:
-          description: Устройство с заданным UUID найдено не было
-    delete:
-      tags: [Devices]
-      summary: Удаление устройства
-      responses:
-        200:
-          description: Устройство успешно удалено # @todo Тут возможно добавить статус ответа { result: true } ...
-        401:
-          description: Переданы некорректные данные
-        404:
-          description: Устройство с заданным UUID найдено не было
-
-# ====================== КОМПОНЕНТЫ ======================
-components:
-  schemas:
-    # ==== Схема устройства ====
-    Device:
-        type: object
-        properties:
-          id:
+          description: Устройство с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+    post:
+      tags: [DeviceFunctionality]
+      summary: Добавить функционал к устройству
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
             type: string
             format: uuid
-            example: 550e8400-e29b-41d4-a716-446655440000
-          name:
-            type: string
-            description: Наименование устройства
-            example: Датчик дыма
-          description:
-            type: string
-            description: Описание устройства
-            example: Используется для отслеживания дыма в помещении
-          serial_number:
-            type: string
-            description: Серийный номер устройства
-            example: IMEI 35-209900-176148-1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceFunctionalityCreate'
+      responses:
+        201:
+          description: Функционал добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceFunctionality'
+        400:
+          description: Передан некорректный идентификатор устройсва
+        404:
+          description: Устройство с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
 
-    # ==== Схема тела создания устройства ====
-    DeviceRequest:
+  /devices/{deviceId}/functionality/{functionalityId}:
+    get:
+      tags: [DeviceFunctionality]
+      summary: Получить информацию о функционале устройства
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: functionalityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Информация о функционале устройства
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceFunctionality'
+        400:
+          description: Передан некорректный идентификатор
+        404:
+          description: Устройство/функционал с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+    put:
+      tags: [DeviceFunctionality]
+      summary: Обновить функционал устройства
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: functionalityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceFunctionalityUpdate'
+      responses:
+        200:
+          description: Функционал обновлен
+        400:
+          description: Передан некорректный идентификатор
+        404:
+          description: Функционал с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+    delete:
+      tags: [DeviceFunctionality]
+      summary: Удалить функционал устройства
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: functionalityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Функционал удален
+        400:
+          description: Передан некорректный идентификатор устройсва
+        404:
+          description: Функционал с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+
+  /devices/{deviceId}/functionality/{functionalityId}/execute:
+    post:
+      tags: [DeviceFunctionality]
+      summary: Выполнить функционал устройства
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: functionalityId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FunctionalityExecutionCommand'
+      responses:
+        202:
+          description: Команда на выполнение функционала принята
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandResponse'
+        400:
+          description: Передан некорректный идентификатор
+        404:
+          description: Устройство/функционал с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+
+  # Управление модулями
+  /modules:
+    get:
+      tags: [Modules]
+      summary: Получить список модулей
+      responses:
+        200:
+          description: Список модулей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+        500:
+          description: Во время выполнения произошла ошибка
+    post:
+      tags: [Modules]
+      summary: Создать новый модуль
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleCreate'
+      responses:
+        201:
+          description: Модуль создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        400:
+          description: Переданы некорректные данные
+        500:
+          description: Во время выполнения произошла ошибка
+
+  /modules/{moduleId}:
+    get:
+      tags: [Modules]
+      summary: Получить информацию о модуле
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Информация о модуле
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        400:
+          description: Передан некорректный идентификатор
+        404:
+          description: Модуль с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+    put:
+      tags: [Modules]
+      summary: Обновить информацию о модуле
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleUpdate'
+      responses:
+        200:
+          description: Информация о модуле обновлена
+    delete:
+      tags: [Modules]
+      summary: Удалить модуль
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Модуль удален
+
+  # Привязка устройств к модулям
+  /modules/{moduleId}/devices:
+    get:
+      tags: [DeviceModuleBinding]
+      summary: Получить список устройств в модуле
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Список устройств в модуле
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        400:
+          description: Передан некорректный идентификатор
+        404:
+          description: Модуль с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+
+  /modules/{moduleId}/devices/{deviceId}:
+    delete:
+      tags: [DeviceModuleBinding]
+      summary: Отвязать устройство от модуля
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Устройство отвязано от модуля
+        400:
+          description: Передан некорректный идентификатор
+        404:
+          description: Устройство с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+    post:
+      tags: [DeviceModuleBinding]
+      summary: Привязать устройство к модулю
+      parameters:
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceModuleBinding'
+      responses:
+        201:
+          description: Устройство привязано к модулю
+        400:
+          description: Передан некорректный идентификатор
+        404:
+          description: Модуль с переданным ID найдено не было
+        500:
+          description: Во время выполнения произошла ошибка
+
+components:
+  schemas:
+    # Схема устройства
+    Device:
       type: object
-      required: [name, serial_number]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        serial_number:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, error]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, type, status, serial_number]
+
+    # Тело создания устройства
+    DeviceCreate:
+      type: object
       properties:
         name:
           type: string
-          description: Наименование устройства
-          example: Датчик дыма
-        serial_number:
-          type: string
-          description: Серийный номер устройства
-          example: IMEI 35-209900-176148-1
         description:
           type: string
-          description: Описание устройства
-          example: Используется для отслеживания дыма в помещении
+        serial_number:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, error]
+      required: [name, serial_number]
 
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+    # Тело обновления устройства
+    DeviceUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive]
+
+    # Схема функционала устройства
+    DeviceFunctionality:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        deviceId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        command:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, deviceId, name, command]
+
+    # Тело создания функции устройства
+    DeviceFunctionalityCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        command:
+          type: string
+      required: [name, command]
+
+    # Тело обновления функции устройства
+    DeviceFunctionalityUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        command:
+          type: string
+
+    # Тело запроса выполнения команды
+    FunctionalityExecutionCommand:
+      type: object
+      properties:
+        parameters:
+          type: object
+
+    # Ответ брокера о выполнении команды
+    CommandResponse:
+      type: object
+      properties:
+        commandId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [accepted, rejected]
+        message:
+          type: string
+      required: [commandId, status]
+
+    # Схема модуля
+    Module:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name]
+
+    # Тело запроса на создание модуля
+    ModuleCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required: [name]
+
+    # Тело запроса на обновление модуля
+    ModuleUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+    # Схема связи устройства с модулем
+    DeviceModuleBinding:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          format: uuid
+      required: [deviceId]

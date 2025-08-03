@@ -1,0 +1,146 @@
+asyncapi: 2.6.0
+info:
+  title: API телеметрии
+  version: 1.0.0
+  description: |
+    Асинхронный API для системы телеметрии умного дома.
+    Основные взаимодействия через брокер сообщений Kafka.
+
+servers:
+  kafka-server:
+    url: kafka://kafka.example.com
+    protocol: kafka
+    description: Основной Kafka-кластер
+    security:
+      - saslScram: []
+
+defaultContentType: application/json
+
+channels:
+  telemetry.data.up:
+    subscribe:
+      operationId: receiveTelemetryData
+      summary: Получение телеметрии от устройств
+      message:
+        $ref: '#/components/messages/TelemetryData'
+
+  telemetry.data.down:
+    publish:
+      operationId: sendTelemetryRequest
+      summary: Запрос телеметрии устройствам
+      message:
+        $ref: '#/components/messages/TelemetryRequest'
+
+  telemetry.storage:
+    publish:
+      operationId: storeTelemetry
+      summary: Сохранение телеметрии в БД
+      message:
+        $ref: '#/components/messages/TelemetryBatch'
+
+components:
+  messages:
+    TelemetryData:
+      name: deviceTelemetry
+      title: Данные телеметрии
+      summary: Сообщение с показателями устройств
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/TelemetryData'
+      traits:
+        - $ref: '#/components/messageTraits/DeviceHeaders'
+
+    TelemetryBatch:
+      name: telemetryBatch
+      title: Пакет телеметрии
+      summary: Пакетное сообщение для сохранения в БД
+      payload:
+        $ref: '#/components/schemas/TelemetryBatch'
+
+    TelemetryRequest:
+      name: telemetryRequest
+      title: Запрос телеметрии
+      payload:
+        $ref: '#/components/schemas/TelemetryRequest'
+
+  schemas:
+    TelemetryData:
+      type: object
+      description: Схема телеметрии
+      properties:
+        deviceId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date-time
+        metrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelemetryMetric'
+      required: [deviceId, date, metrics]
+
+    TelemetryMetric:
+      type: object
+      description: Метрики телеметрии
+      properties:
+        type:
+          type: string
+        value:
+          oneOf:
+            - type: number
+            - type: string
+            - type: boolean
+      required: [type, value]
+
+    TelemetryBatch:
+      type: object
+      properties:
+        batchId:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelemetryData'
+        storedAt:
+          type: string
+          format: date-time
+      required: [batchId, items]
+
+    TelemetryRequest:
+      type: object
+      description: Схема запроса телеметрии по устройствам
+      properties:
+        requestId:
+          type: string
+          format: uuid
+        deviceIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        metricTypes:
+          type: array
+          items:
+            type: string
+      required: [requestId, deviceIds]
+
+  messageTraits:
+    DeviceHeaders:
+      headers:
+        type: object
+        properties:
+          deviceId:
+            type: string
+            format: uuid
+          firmwareVersion:
+            type: string
+          messageId:
+            type: string
+        required: [deviceId, messageId]
+
+  securitySchemes:
+    saslScram:
+      type: scramSha256
+      description: SASL SCRAM-SHA-256 аутентификация

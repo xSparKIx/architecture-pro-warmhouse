@@ -6,6 +6,7 @@ title Диаграмма компонентов управления польз�
 ' Внешние сущности
 Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
 ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о пользовательских сценариях и их связях")
+Container(broker, "Брокер сообщений", "Kafka", "Хранит информацию о переданных командах устройствам")
 
 ' Контейнер администрирования пользователей
 Container_Boundary(ScenariosContainer, "Администрирование пользовательских сценариев") {
@@ -13,6 +14,11 @@ Container_Boundary(ScenariosContainer, "Администрирование по�
     Component(ScenariosController, "Контроллер управления пользовательскими сценариями", "NodeJS Rest Controller")
     Component(ScenariosService, "Сервис управления пользовательскими сценариями", "NodeJS")
     Component(ScenariosComponent, "Компонент управления пользовательскими сценариями", "NodeJS")
+
+    ' Запуск пользовательских сценариев
+    Component(ScenariosRunController, "Контроллер запуска пользовательских сценариев", "NodeJS Rest Controller")
+    Component(ScenariosRunService, "Сервис запуска пользовательских сценариев", "NodeJS")
+    Component(ScenariosRunComponent, "Компонент запуска пользовательских сценариев", "NodeJS")
 
     ' Привязка домов к пользовательским сценариям
     Component(HousesConnectController, "Контроллер привязки домов к пользовательским сценариям", "NodeJS Rest Controller")
@@ -45,6 +51,12 @@ Rel(APIGateway, ScenariosController, "Делает запросы управле
 Rel(ScenariosController, ScenariosService, "Вызывает бизнес-логику")
 Rel(ScenariosService, ScenariosComponent, "Читает/записывает/удаляет данные о пользовательских сценариях")
 Rel(ScenariosComponent, db, "Данные о пользовательских сценариях")
+
+' Связи запуска пользовательских сценариев
+Rel(APIGateway, ScenariosRunController, "Делает запросы запуска пользовательских сценариев")
+Rel(ScenariosRunController, ScenariosRunService, "Вызывает бизнес-логику")
+Rel(ScenariosRunService, ScenariosRunComponent, "Записывает команду для запуска")
+Rel(ScenariosRunComponent, broker, "Команды для запуска")
 
 ' Связи привязки домов к пользовательским сценариям
 Rel(APIGateway, HousesConnectController, "Делает запросы на привязку домов к пользовательским сценариям")

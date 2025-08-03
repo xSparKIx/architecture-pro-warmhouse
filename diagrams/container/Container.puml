@@ -13,7 +13,7 @@ Person(user, "Пользователь", "Пользователь умного 
 Person(support, "Команда поддержки", "Команда по обслуживанию клиентов")
 Person(manager, "Команда продажи", "Команда по продажам и маркетингу")
 
-System_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
+Container_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
 
 ' --------
 ' Системы
@@ -85,6 +85,9 @@ Rel(TelemetryContainer, broker, "Данные о телеметрии устро
 ' Связи системы управления устройствами
 Rel(DevicesContainer, UserDevicesSystem, "Запросы управления устройствами")
 Rel(DevicesContainer, broker, "Запросы управления устройствами")
+
+' Связи системы управления пользовательскими сценариями
+Rel(ScenariosContainer, broker, "Запросы на запуск сценариев")
 
 ' Связи бд
 Rel(DevicesContainer, db, "Данные об устройствах и их функционале")

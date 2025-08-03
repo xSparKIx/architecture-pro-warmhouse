@@ -9,21 +9,28 @@ entity "Устройство" as Device {
     + id [PK]: uuid
     name: varchar
     description: varchar
-    status: varchar
     serial_number: varchar
+    status: varchar
+    createdAt: timestamp
+    updatedAt: timestamp
 }
 
 entity "Функция устройства" as DeviceFunction {
     + id [PK]: uuid
+    + deviceId [FK]: uuid
     name: varchar
     description: varchar
     command: varchar
+    createdAt: timestamp
+    updatedAt: timestamp
 }
 
 entity "Модуль" as Module {
     + id [PK]: uuid
     name: varchar
     description: varchar
+    createdAt: timestamp
+    updatedAt: timestamp
 }
 
 entity "Связь устройств с модулями" as DMRelation {
@@ -34,8 +41,9 @@ entity "Связь устройств с модулями" as DMRelation {
 
 entity "Телеметрия" as Telemetry {
     + id [PK]: uuid
-    + serial_number: varchar
-    + data: JSONB
+    + deviceId [FK]: uuid
+    date: timestamp
+    metrics: JSONB
 }
 
 entity "Пользователь" as User {  
@@ -58,9 +66,11 @@ entity "Связь ролей с пользователями" as RURelation {
 
 entity "Дом" as House {
     + id [PK]: uuid
-    + name: varchar
-    + description: varchar
-    + address: varchar
+    name: varchar
+    description: varchar
+    address: varchar
+    createdAt: timestamp
+    updatedAt: timestamp
 }
 
 entity "Связь локаций с домами" as LHRelation {
@@ -85,6 +95,9 @@ entity "Локация" as Location {
     + id [PK]: uuid
     name: varchar
     description: varchar
+    type: varchar
+    createdAt: timestamp
+    updatedAt: timestamp
 }
 
 entity "Связь модулей с локациями" as MLRelation {
@@ -167,8 +180,6 @@ House ||--o{ DHRelation
 House }o--o{ HSRelation
 
 ' Связи локаций
-' @todo Одна локация не может быть в двух разных домах
-' @todo Проверить связь локаций с домами
 Location }o--|| LHRelation
 Location ||--o{ MLRelation
 Location ||--o{ DLRelation
