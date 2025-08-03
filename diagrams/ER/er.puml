@@ -1,0 +1,183 @@
+@startuml Er diagram
+
+hide circle
+
+!include ../templates/C4_Component.puml
+
+' Сущности
+entity "Устройство" as Device {
+    + id [PK]: uuid
+    name: varchar
+    description: varchar
+    status: varchar
+    serial_number: varchar
+}
+
+entity "Функция устройства" as DeviceFunction {
+    + id [PK]: uuid
+    name: varchar
+    description: varchar
+    command: varchar
+}
+
+entity "Модуль" as Module {
+    + id [PK]: uuid
+    name: varchar
+    description: varchar
+}
+
+entity "Связь устройств с модулями" as DMRelation {
+    + id: uuid
+    + deviceId: uuid
+    + moduleId: uuid
+}
+
+entity "Телеметрия" as Telemetry {
+    + id [PK]: uuid
+    + serial_number: varchar
+    + data: JSONB
+}
+
+entity "Пользователь" as User {  
+    + id [PK]: uuid
+    name: varchar
+    email: varchar
+    phone: varchar
+}
+
+entity "Роль" as Role {  
+    + id [PK]: uuid
+    name: varchar
+}
+
+entity "Связь ролей с пользователями" as RURelation {
+    + id [PK]: uuid
+    + userId [FK]: uuid
+    + roleId [FK]: uuid
+}
+
+entity "Дом" as House {
+    + id [PK]: uuid
+    + name: varchar
+    + description: varchar
+    + address: varchar
+}
+
+entity "Связь локаций с домами" as LHRelation {
+    + id [PK]: uuid
+    + houseId [FK]: uuid
+    + locationId [FK]: uuid
+}
+
+entity "Связь модулей с домами" as MHRelation {
+    + id [PK]: uuid
+    + houseId [FK]: uuid
+    + moduleId [FK]: uuid
+}
+
+entity "Связь устройств с домами" as DHRelation {
+    + id [PK]: uuid
+    + houseId [FK]: uuid
+    + deviceId [FK]: uuid
+}
+
+entity "Локация" as Location {
+    + id [PK]: uuid
+    name: varchar
+    description: varchar
+}
+
+entity "Связь модулей с локациями" as MLRelation {
+    + id [PK]: uuid
+    + moduleId [FK]: uuid
+    + locationId [FK]: uuid
+}
+
+entity "Связь устройств с локациями" as DLRelation {
+    + id [PK]: uuid
+    + deviceId [FK]: uuid
+    + locationId [FK]: uuid
+}
+
+' @todo conditions и command должны быть других типов и вообще условия должны быть в отдельной таблице
+' @todo и тогда в схеме C4 их тоже надо будет прописать
+entity "Пользовательский сценарий" as Scenario {
+    + id [PK]: uuid
+    + name: varchar
+    + description: varchar
+    + command
+    + conditions
+}
+
+entity "Связь домов с пользовательскими сценариями" as HSRelation {
+    + id [PK]: uuid
+    + scenarioId [FK]: uuid
+    + houseId [FK]: uuid
+}
+
+entity "Связь локаций с пользовательскими сценариями" as LSRelation {
+    + id [PK]: uuid
+    + scenarioId [FK]: uuid
+    + locationId [FK]: uuid
+}
+
+entity "Связь модулей с пользовательскими сценариями" as MSRelation {
+    + id [PK]: uuid
+    + scenarioId [FK]: uuid
+    + moduleId [FK]: uuid
+}
+
+entity "Связь устройств с пользовательскими сценариями" as DSRelation {
+    + id [PK]: uuid
+    + scenarioId [FK]: uuid
+    + deviceId [FK]: uuid
+}
+
+entity "Связь пользователей с пользовательскими сценариями" as USRelation {
+    + id [PK]: uuid
+    + scenarioId [FK]: uuid
+    + userId [FK]: uuid
+}
+
+' Связи устройств
+Device ||--o{ DeviceFunction
+Device }o--o{ DMRelation
+Device ||--o{ Telemetry
+Device ||--|| DHRelation
+Device ||--|| DLRelation
+Device }o--o{ DSRelation
+
+' Связи модулей
+Module }o--o{ DMRelation
+Module }o--|| MHRelation
+Module }o--|| MLRelation
+Module }o--o{ MSRelation
+
+' Связи пользователей
+User ||--o{ RURelation
+User ||--o{ USRelation
+
+' Связи ролей
+Role }o--o{ RURelation
+
+' Связи домов
+House ||--o{ LHRelation
+House ||--o{ MHRelation
+House ||--o{ DHRelation
+House }o--o{ HSRelation
+
+' Связи локаций
+' @todo Одна локация не может быть в двух разных домах
+' @todo Проверить связь локаций с домами
+Location }o--|| LHRelation
+Location ||--o{ MLRelation
+Location ||--o{ DLRelation
+Location }o--o{ LSRelation
+
+' Связи пользовательских сценариев
+Scenario }o--o{ HSRelation
+Scenario }o--o{ LSRelation
+Scenario ||--o{ MSRelation
+Scenario ||--o{ DSRelation
+Scenario ||--o{ USRelation
+@enduml

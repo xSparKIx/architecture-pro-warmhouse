@@ -1,0 +1,79 @@
+@startuml Scenarios component diagram
+title Диаграмма компонентов управления пользовательксими сценариями
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о пользовательских сценариях и их связях")
+
+' Контейнер администрирования пользователей
+Container_Boundary(ScenariosContainer, "Администрирование пользовательских сценариев") {
+    ' Управление пользовательскими сценариями
+    Component(ScenariosController, "Контроллер управления пользовательскими сценариями", "NodeJS Rest Controller")
+    Component(ScenariosService, "Сервис управления пользовательскими сценариями", "NodeJS")
+    Component(ScenariosComponent, "Компонент управления пользовательскими сценариями", "NodeJS")
+
+    ' Привязка домов к пользовательским сценариям
+    Component(HousesConnectController, "Контроллер привязки домов к пользовательским сценариям", "NodeJS Rest Controller")
+    Component(HousesConnectService, "Сервис привязки домов к пользовательским сценариям", "NodeJS")
+    Component(HousesConnectComponent, "Компонент привязки домов к пользовательским сценариям", "NodeJS")
+
+    ' Привязка локаций к пользовательским сценариям
+    Component(LocationsConnectController, "Контроллер привязки локаций к пользовательским сценариям", "NodeJS Rest Controller")
+    Component(LocationsConnectService, "Сервис привязки локаций к пользовательским сценариям", "NodeJS")
+    Component(LocationsConnectComponent, "Компонент привязки локаций к пользовательским сценариям", "NodeJS")
+
+    ' Привязка модулей к пользовательским сценариям
+    Component(ModulesConnectController, "Контроллер привязки модулей к пользовательским сценариям", "NodeJS Rest Controller")
+    Component(ModulesConnectService, "Сервис привязки модулей к пользовательским сценариям", "NodeJS")
+    Component(ModulesConnectComponent, "Компонент привязки модулей к пользовательским сценариям", "NodeJS")
+
+    ' Привязка устройсв к пользовательским сценариям
+    Component(DevicesConnectController, "Контроллер привязки устройсв к пользовательским сценариям", "NodeJS Rest Controller")
+    Component(DevicesConnectService, "Сервис привязки устройсв к пользовательским сценариям", "NodeJS")
+    Component(DevicesConnectComponent, "Компонент привязки устройсв к пользовательским сценариям", "NodeJS")
+
+    ' Привязка пользователей к пользовательским сценариям
+    Component(UsersConnectController, "Контроллер привязки пользователей к пользовательским сценариям", "NodeJS Rest Controller")
+    Component(UsersConnectService, "Сервис привязки пользователей к пользовательским сценариям", "NodeJS")
+    Component(UsersConnectComponent, "Компонент привязки пользователей к пользовательским сценариям", "NodeJS")
+}
+
+' Связи управления пользовательскими сценариями
+Rel(APIGateway, ScenariosController, "Делает запросы управления пользовательскими сценариями")
+Rel(ScenariosController, ScenariosService, "Вызывает бизнес-логику")
+Rel(ScenariosService, ScenariosComponent, "Читает/записывает/удаляет данные о пользовательских сценариях")
+Rel(ScenariosComponent, db, "Данные о пользовательских сценариях")
+
+' Связи привязки домов к пользовательским сценариям
+Rel(APIGateway, HousesConnectController, "Делает запросы на привязку домов к пользовательским сценариям")
+Rel(HousesConnectController, HousesConnectService, "Вызывает бизнес-логику")
+Rel(HousesConnectService, HousesConnectComponent, "Читает/записывает/удаляет данные о связи домов с пользовательскими сценариями")
+Rel(HousesConnectComponent, db, "Данные о связи домов с пользовательскими сценариями")
+
+' Связи привязки локаций к пользовательским сценариям
+Rel(APIGateway, LocationsConnectController, "Делает запросы на привязку локаций к пользовательским сценариям")
+Rel(LocationsConnectController, LocationsConnectService, "Вызывает бизнес-логику")
+Rel(LocationsConnectService, LocationsConnectComponent, "Читает/записывает/удаляет данные о связи локаций с пользовательскими сценариями")
+Rel(LocationsConnectComponent, db, "Данные о связи локаций с пользовательскими сценариями")
+
+' Связи привязки модулей к пользовательским сценариям
+Rel(APIGateway, ModulesConnectController, "Делает запросы на привязку модулей к пользовательским сценариям")
+Rel(ModulesConnectController, ModulesConnectService, "Вызывает бизнес-логику")
+Rel(ModulesConnectService, ModulesConnectComponent, "Читает/записывает/удаляет данные о связи модулей с пользовательскими сценариями")
+Rel(ModulesConnectComponent, db, "Данные о связи модулей с пользовательскими сценариями")
+
+' Связи привязки устройств к пользовательским сценариям
+Rel(APIGateway, DevicesConnectController, "Делает запросы на привязку устройств к пользовательским сценариям")
+Rel(DevicesConnectController, DevicesConnectService, "Вызывает бизнес-логику")
+Rel(DevicesConnectService, DevicesConnectComponent, "Читает/записывает/удаляет данные о связи устройств с пользовательскими сценариями")
+Rel(DevicesConnectComponent, db, "Данные о связи устройств с пользовательскими сценариями")
+
+' Связи привязки пользователей к пользовательским сценариям
+Rel(APIGateway, UsersConnectController, "Делает запросы на привязку пользователей к пользовательским сценариям")
+Rel(UsersConnectController, UsersConnectService, "Вызывает бизнес-логику")
+Rel(UsersConnectService, UsersConnectComponent, "Читает/записывает/удаляет данные о связи пользователей с пользовательскими сценариями")
+Rel(UsersConnectComponent, db, "Данные о связи пользователей с пользовательскими сценариями")
+
+@endmul

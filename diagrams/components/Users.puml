@@ -1,0 +1,44 @@
+@startuml Users component diagram
+title Диаграмма компонентов управления пользователями
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о пользователях, ролях и их связях")
+
+' Контейнер администрирования пользователей
+Container_Boundary(UsersContainer, "Администрирование пользователей") {
+    ' Управление учетными записями пользователей
+    Component(UsersController, "Контроллер управления пользователями", "NodeJS Rest Controller")
+    Component(UsersService, "Сервис управления пользователями", "NodeJS")
+    Component(UsersComponent, "Компонент управления пользователями", "NodeJS")
+
+    ' Управление ролями
+    Component(RolesController, "Контроллер управления ролями", "NodeJS Rest Controller")
+    Component(RolesService, "Сервис управления ролями", "NodeJS")
+    Component(RolesComponent, "Компонент управления ролями", "NodeJS")
+
+    ' Привязка ролей к пользователю
+    Component(RolesConnectController, "Контроллер привязки ролей к пользователям", "NodeJS Rest Controller")
+    Component(RolesConnectService, "Сервис привязки ролей к пользователям", "NodeJS")
+    Component(RolesConnectComponent, "Компонент привязки ролей к пользователям", "NodeJS")
+}
+
+' Связи
+Rel(APIGateway, UsersController, "Делает запросы управления пользователями")
+Rel(UsersController, UsersService, "Вызывает бизнес-логику")
+Rel(UsersService, UsersComponent, "Читает/записывает/удаляет данные о пользователях")
+Rel(UsersComponent, db, "Данные о пользователях")
+
+Rel(APIGateway, RolesController, "Делает запросы управления ролями")
+Rel(RolesController, RolesService, "Вызывает бизнес-логику")
+Rel(RolesService, RolesComponent, "Читает/записывает/удаляет данные о ролях")
+Rel(RolesComponent, db, "Данные о ролях")
+
+Rel(APIGateway, RolesConnectController, "Делает запросы привязки ролей к пользователям")
+Rel(RolesConnectController, RolesConnectService, "Вызывает бизнес-логику")
+Rel(RolesConnectService, RolesConnectComponent, "Читает/записывает/удаляет данные о связях ролей с пользователями")
+Rel(RolesConnectComponent, db, "Данные о связях ролей с пользователями")
+
+@endmul

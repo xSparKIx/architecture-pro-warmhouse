@@ -1,0 +1,43 @@
+@startuml Telemetry components diagram
+title Диаграмма компонентов системы телеметрии
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+Container(broker, "Брокер сообщений", "Kafka", "Хранит информацию о телеметрии устройств")
+ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о телеметрии устройств")
+System_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
+
+' Контейнер сбора телеметрии
+Container_Boundary(TelemetryContainer, "Сбор телеметрии") {
+    ' Сбор телеметрии
+    Component(TelemetryController, "Контроллер сбора телеметрии", "NodeJS Rest Controller")
+    Component(TelemetryService, "Сервис сбора телеметрии", "NodeJS")
+    Component(TelemetryComponent, "Компонент сбора телеметрии", "NodeJS")
+
+    ' Запись телеметрии
+    Component(TelemetryWriteController, "Контроллер записи телеметрии", "NodeJS Rest Controller")
+    Component(TelemetryWriteService, "Сервис записи телеметрии", "NodeJS")
+    Component(TelemetryWriteComponent, "Компонент записи телеметрии", "NodeJS")
+}
+
+' Связи
+Rel(APIGateway, TelemetryController, "Делает запросы на получение телеметрии")
+Rel(TelemetryController, TelemetryService, "Вызывает бизнес-логику")
+Rel(TelemetryService, TelemetryComponent, "Читает/записывает данные о телеметрии")
+Rel(TelemetryComponent, broker, "Данные о телеметрии")
+Rel(TelemetryComponent, UserDevicesSystem, "Данные о телеметрии")
+
+' @todo Перепроверить и еще вопрос обязательно ли реализовывать отдельный контроллер записи
+' @todo Перепрвоерить, вполне возможно тут должна быть нисходящая связь и компонент записи должен связаны быть с брокером,
+' а не выше
+' @todo Тут еще надо предусмотреть что телеметрия должна вооюще постоянно собираться или сделать чтобы она собиралась по необходимости
+' когда пользователь смотрит, но нет сценарии должны постоянно же обрабатываться
+Rel(APIGateway, TelemetryWriteController, "Делает запросы на запись телеметрии")
+Rel(broker, TelemetryWriteService, "Обновление данных телеметрии")
+Rel(TelemetryWriteController, TelemetryWriteService, "Вызывает бизнес-логику")
+Rel(TelemetryWriteService, TelemetryWriteComponent, "Читает/записывает/удаляет данные о телеметрии")
+Rel(TelemetryWriteComponent, db, "Данные о телеметрии")
+
+@endmul

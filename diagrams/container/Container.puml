@@ -22,10 +22,10 @@ System_Ext(UserDevicesSystem, "Устройства умного дома пол
 System_Boundary(SmartHomeSystem, "Система управления умным домом") {
     ' Контейнеры
     Container(WebApp, "Веб-приложение", "JavaScript и выбранный фреймворк", "Веб-интерфейс для управления умным домом")
-    Container(ApiApplication, "Api Application", "GoLang 1.22", "Обрабатывает запросы пользователей")
-    ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию об устройствах, пользователях и телеметрии")
-    Container(broker, "Брокер сообщений", "Kafka", "Пропускает через себя данные о телеметрии")
-    Container(streams, "Обработчик (Библиотека)", "Kafka Streams", "Обрабатывает потоки и агрегирует данные в режиме реального времени")
+    Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+    ContainerDb(db, "База данных", "PostgreSql 16")
+    Container(broker, "Брокер сообщений", "Kafka", "Хранит информацию о телеметрии устройств")
+    ContainerDb(redis, "База данных", "Redis", "Хранит информацию о сессиях пользователей и кеши")
 
     ' Системы
     System_Boundary(DevicesSystem, "Управление устройствами") {
@@ -65,35 +65,35 @@ Rel(support, WebApp, "Использует для управления поль�
 Rel(manager, WebApp, "Использует для получения информации о пользователях и их оборудовании")
 
 ' Связи интерфейсов с API
-Rel(WebApp, ApiApplication, "Выполняет вызовы Api")
+Rel(WebApp, APIGateway, "Выполняет вызовы Api")
 
 ' Связи API
-Rel(ApiApplication, db, "Обновления информации об умном доме и пользователях")
-Rel(ApiApplication, DevicesContainer, "Запросы управления устройствами", "JSON")
-Rel(ApiApplication, ModulesContainer, "Запросы управления модулями", "JSON")
-Rel(ApiApplication, broker, "Запросы на получение телеметрии")
-Rel(ApiApplication, UsersContainer, "Запросы управления пользователями", "JSON")
-Rel(ApiApplication, HousesContainer, "Запросы управления домами", "JSON")
-Rel(ApiApplication, LocationsContainer, "Запросы управления локациями", "JSON")
-Rel(ApiApplication, ScenariosContainer, "Запросы урпавления пользовательскими сценариями", "JSON")
-Rel(ApiApplication, AnaliticContainer, "Данные для аналитики")
-
-' Связи брокера сообщений
-' @todo Возможно убрать streams
-Rel(broker, streams, "Потоки для обработки", "Stream")
-' @todo Подумать правильно ли тут подключен брокер и должен ли он быть связан с api
-Rel(broker, TelemetryContainer, "Получает ин")
+Rel(APIGateway, DevicesContainer, "Запросы управления устройствами", "JSON")
+Rel(APIGateway, ModulesContainer, "Запросы управления модулями", "JSON")
+Rel(APIGateway, TelemetryContainer, "Запросы на получение телеметрии")
+Rel(APIGateway, UsersContainer, "Запросы управления пользователями", "JSON")
+Rel(APIGateway, HousesContainer, "Запросы управления домами", "JSON")
+Rel(APIGateway, LocationsContainer, "Запросы управления локациями", "JSON")
+Rel(APIGateway, ScenariosContainer, "Запросы урпавления пользовательскими сценариями", "JSON")
+Rel(APIGateway, AnaliticContainer, "Данные для аналитики и отчетности")
+Rel(APIGateway, redis, "Данные сессиях", "JSON")
 
 ' Связи системы управления телеметрией
-Rel(TelemetryContainer, UserDevicesSystem, "Информация от устройств умного дома")
+Rel(TelemetryContainer, UserDevicesSystem, "Данные от устройств умного дома")
+Rel(TelemetryContainer, broker, "Данные о телеметрии устройств")
 
 ' Связи системы управления устройствами
-' @todo Тут вопрос нужно ли их между собой связывать или можно через Api Application между ними взимодействовать
-' @todo По идее Api хватит
-' @todo Возможно убрать Api Application и сделать так чтобы каждый сервис сам писал в бд
-' @todo В модуле управления телеметрией тогда еще будет запись в бд,
-' а связь будет: ИЗ ТЕЛЕМЕТРИИ В БРОКЕР И ИЗ ТЕЛЕМЕТРИИ В БД
-' Rel(DevicesContainer, UserDevicesSystem, "Запросы управления устройсвами")
-' Rel(DevicesContainer, ModulesContainer, "Запросы на привязку устройств")
+Rel(DevicesContainer, UserDevicesSystem, "Запросы управления устройствами")
+Rel(DevicesContainer, broker, "Запросы управления устройствами")
+
+' Связи бд
+Rel(DevicesContainer, db, "Данные об устройствах и их функционале")
+Rel(ModulesContainer, db, "Данные о модулях и их связе с устройствами")
+Rel(UsersContainer, db, "Данные о пользователях, ролях и их связях")
+Rel(HousesContainer, db, "Данные о домах и их связях")
+Rel(LocationsContainer, db, "Данные о локациях и их связях")
+Rel(ScenariosContainer, db, "Данные о пользовательских сценариях и их связях")
+Rel(AnaliticContainer, db, "Данные для построения аналитики и отчетности")
+Rel(TelemetryContainer, db, "Данные о телеметрии устройств")
 
 @enduml

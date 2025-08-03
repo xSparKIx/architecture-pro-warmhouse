@@ -1,0 +1,72 @@
+@startuml Devices component diagram
+title Диаграмма компонентов управления устройств
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию об устройствах, функционале устройств, модулях и их связках")
+Container(broker, "Брокер сообщений", "Kafka", "Хранит информацию о переданных командах устройствам")
+System_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
+
+' @todo Тут посмотреть реализацию в NestJS заменить Nodejs на Nest и скорректировать структуру
+' @todo Скорее всего тут добавить запись в бд напрямую всеже а не через апи, ПОДУМАТЬ
+' @todo Возможно между сервисами управления устройствами и управлением функционалом устройства должна быть связь
+' но это не точно, так как можно сразу при создании записывать функции (тогда связь будет) либо делать это последовательно (вызывать разные ручки и связи тогда не будет)
+' @todo Возможно не нужно выделять отдельно сервисы, а обойтись только компонентами
+
+' @todo Добавить сюда брокер чтобы команды шли через него
+' @todo Возможно добавить сюда сервис состояния устройств, который их будет опрашивать, но вообще тут есть похожий
+' и у нас есть сервис телеметрии еще
+
+' Контейнер администрирования устройств
+Container_Boundary(DevicesContainer, "Администрирование устройств") {
+    ' Управление устройствами
+    Component(DevicesController, "Контроллер управления устройствами", "NodeJS Rest Controller")
+    Component(DevicesService, "Сервис управления устройствами", "NodeJS")
+    Component(DevicesComponent, "Компонент управления устройствами", "NodeJS")
+
+    ' Администрирование устройств
+    Component(FunctionalController, "Контроллер управления функционалом устройства", "NodeJS Rest Controller")
+    Component(FunctionalService,  "Сервис управления функционалом устройства", "NodeJS")
+    Component(FunctionalComponent,  "Компонент управления функционалом устройства", "NodeJS")
+}
+
+' Контейнер администрирования модулей
+Container_Boundary(ModulesContainer, "Администрирование модулей") {
+    ' Управление устройствами
+    Component(ModulesController, "Контроллер управления модулями", "NodeJS Rest Controller")
+    Component(ModulesService, "Сервис управления модулями", "NodeJS")
+    Component(ModulesComponent, "Компонент управления модулями", "NodeJS")
+
+    ' Привязка устройств к модулям
+    Component(ModulesConnectController, "Контроллер привязки устройств к модулям", "NodeJS Rest Controller")
+    Component(ModulesConnectService, "Сервис привязки устройств к модулям", "NodeJS")
+    Component(ModulesConnectComponent, "Компонент привязки устройств к модулям", "NodeJS")
+}
+
+' Связи контейнера администрирования устройств
+Rel(APIGateway, DevicesController, "Делает запросы управления устройствами")
+Rel(DevicesController, DevicesService, "Вызывает бизнес-логику")
+Rel(DevicesService, DevicesComponent, "Читает/записывает/удаляет данные об устройствах и управляет ими")
+Rel(DevicesComponent, UserDevicesSystem, "Запросы управления устройствами")
+Rel(DevicesComponent, db, "Данные об устройствах")
+
+Rel(APIGateway, FunctionalController, "Делает запросы управления функционалом устройств")
+Rel(FunctionalController, FunctionalService, "Вызывает бизнес-логику")
+Rel(FunctionalService, FunctionalComponent, "Читает/записывает/удаляет данные о функционале устройств и вызывает его срабатывание")
+Rel(FunctionalComponent, UserDevicesSystem, "Запросы управления функционалом устройств")
+Rel(FunctionalComponent, db, "Данные о функционале устройств")
+
+' Связи контейнера администрирования модулей
+Rel(APIGateway, ModulesController, "Делает запросы управления модулями")
+Rel(ModulesController, ModulesService, "Вызывает бизнес-логику")
+Rel(ModulesService, ModulesComponent, "Читает/записывает/удаляет данные о модулях")
+Rel(ModulesComponent, db, "Данные о модулях")
+
+Rel(APIGateway, ModulesConnectController, "Делает запросы связи устройств с модулями")
+Rel(ModulesConnectController, ModulesConnectService, "Вызывает бизнес-логику")
+Rel(ModulesConnectService, ModulesConnectComponent, "Читает/записывает/удаляет связи устройств с модулями")
+Rel(ModulesConnectComponent, db, "Данные о связи устройств с модулями")
+
+@endmul
