@@ -15,7 +15,7 @@ services:
       timeout: 3s
       retries: 5
     ports:
-      - "8082:5432"
+      - "5432:5432"
     restart: unless-stopped
     networks:
       - smarthome-network
@@ -30,7 +30,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:8082/smarthome
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
     ports:
       - "8081:3000"
     restart: unless-stopped
@@ -48,8 +48,7 @@ services:
       temperature-api:
         condition: service_started
     environment:
-      - DB_HOST=postgres
-      - DATABASE_URL=postgres://postgres:postgres@postgres:8082/smarthome
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
       - TEMPERATURE_API_URL=http://temperature-api:8081
     ports:
       - "8080:8080"
