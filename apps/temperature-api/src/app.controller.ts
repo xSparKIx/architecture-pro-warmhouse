@@ -14,6 +14,6 @@ export class AppController {
       throw new BadRequestException('Не передана локация');
     }
 
-    return this.appService.getRandomTemperature();
+    return this.appService.getRandomTemperature(location);
   }
 }
