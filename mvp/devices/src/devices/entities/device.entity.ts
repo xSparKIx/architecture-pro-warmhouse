@@ -15,7 +15,7 @@ import { DeviceModule } from '../../modules-connect/entities/device_modules_conn
 @Entity('devices')
 export class Device {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column()
   name: string;

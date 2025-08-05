@@ -27,8 +27,8 @@ export class Functionality {
   @Column()
   description: string;
 
-  @Column()
-  command: string;
+  @Column({ type: 'jsonb', default: {} })
+  command: Record<string, any>;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

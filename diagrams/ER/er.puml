@@ -20,7 +20,7 @@ entity "Функция устройства" as DeviceFunction {
     + deviceId [FK]: uuid
     name: varchar
     description: varchar
-    command: varchar
+    command: jsonb
     createdAt: timestamp
     updatedAt: timestamp
 }
@@ -118,8 +118,8 @@ entity "Пользовательский сценарий" as Scenario {
     + id [PK]: uuid
     + name: varchar
     + description: varchar
-    + command
-    + conditions
+    + command jsonb
+    + conditions jsonb
 }
 
 entity "Связь домов с пользовательскими сценариями" as HSRelation {
@@ -154,14 +154,14 @@ entity "Связь пользователей с пользовательски�
 
 ' Связи устройств
 Device ||--o{ DeviceFunction
-Device }o--o{ DMRelation
+Device ||--o{ DMRelation
 Device ||--o{ Telemetry
 Device ||--|| DHRelation
 Device ||--|| DLRelation
 Device }o--o{ DSRelation
 
 ' Связи модулей
-Module }o--o{ DMRelation
+Module ||--o{ DMRelation
 Module }o--|| MHRelation
 Module }o--|| MLRelation
 Module }o--o{ MSRelation

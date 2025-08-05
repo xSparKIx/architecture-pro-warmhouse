@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Device } from './entities/device.entity';
 import { DevicesController } from './devices.controller';
 import { DevicesService } from './devices.service';
+// import { KafkaModule } from 'src/common/kafka.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Device])],
