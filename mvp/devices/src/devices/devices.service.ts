@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Device } from './entities/device.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UpdateDeviceDto } from './dto/update-device.dto';
 
 @Injectable()
@@ -24,14 +24,8 @@ export class DevicesService {
      * Метод обновления данных устройства
      * @param data 
      */
-    async update(id: string, data: UpdateDeviceDto): Promise<Device> {
-        const device = await this.deviceRepository.findOne({ where: { id }});
-
-        if (!device) {
-            throw new NotFoundException(`Устройство с id ${id} найдено не было`);
-        }
-
-        return this.deviceRepository.save(Object.assign(device, data));
+    async update(id: string, data: UpdateDeviceDto): Promise<UpdateResult> {
+        return this.deviceRepository.update(id, data);
     }
 
     /**
@@ -47,6 +41,6 @@ export class DevicesService {
      * Метод получения всех записей
      */
     findAll() {
-      return this,this.deviceRepository.find();
+      return this.deviceRepository.find();
     }
 }

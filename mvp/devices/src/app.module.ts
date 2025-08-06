@@ -11,7 +11,6 @@ import { DevicesModule } from './devices/devices.module';
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule,
-    KafkaModule,
     FunctionalModule,
     DevicesModule,
   ],
