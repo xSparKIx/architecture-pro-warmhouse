@@ -6,6 +6,7 @@ title Диаграмма компонентов управления польз�
 ' Внешние сущности
 Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
 ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о пользователях, ролях и их связях")
+ContainerDb(redis, "База данных", "Redis", "Хранит информацию о сессиях пользователей и кеши")
 
 ' Контейнер администрирования пользователей
 Container_Boundary(UsersContainer, "Администрирование пользователей") {
@@ -23,6 +24,11 @@ Container_Boundary(UsersContainer, "Администрирование поль�
     Component(RolesConnectController, "Контроллер привязки ролей к пользователям", "NodeJS Rest Controller")
     Component(RolesConnectService, "Сервис привязки ролей к пользователям", "NodeJS")
     Component(RolesConnectComponent, "Компонент привязки ролей к пользователям", "NodeJS")
+
+    ' Управление авторизацией пользователя
+    Component(AuthController, "Контроллер управления авторизацией пользователей", "NodeJS Rest Controller")
+    Component(AuthService, "Сервис управления авторизацией пользователей", "NodeJS")
+    Component(AuthComponent, "Компонент управления авторизацией пользователей", "NodeJS")
 }
 
 ' Связи
@@ -40,5 +46,12 @@ Rel(APIGateway, RolesConnectController, "Делает запросы привя�
 Rel(RolesConnectController, RolesConnectService, "Вызывает бизнес-логику")
 Rel(RolesConnectService, RolesConnectComponent, "Читает/записывает/удаляет данные о связях ролей с пользователями")
 Rel(RolesConnectComponent, db, "Данные о связях ролей с пользователями")
+
+' Связи управления авторизацией пользователя
+Rel(APIGateway, AuthController, "Делает запросы авторизации пользователей")
+Rel(AuthController, AuthService, "Вызывает бизнес-логику")
+Rel(AuthService, AuthComponent, "Читает/записывает/удаляет данные об авторизации")
+Rel(AuthComponent, redis, "Данные об авторизации")
+Rel(AuthComponent, db, "Данные о пользователе и его ролях")
 
 @endmul

@@ -5,31 +5,17 @@ title Диаграмма компонентов API
 
 ' Внешние сущности
 Container(WebApp, "Веб-приложение", "JavaScript и выбранный фреймворк", "Веб-интерфейс для управления умным домом")
-ContainerDb(redis, "База данных", "Redis", "Хранит информацию о сессиях пользователей и кеши")
-ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о пользователях и ролях")
 Container(UsedContainer, "Сервис к которому идет запрос")
+
+' @todo Сюда возможно добавить обращение к сервису авторизации для проверки пользователя
 
 ' Контейнер API Gateway
 Container_Boundary(TelemetryContainer, "API Gateway") {
-    ' Управление авторизацией пользователя
-    Component(AuthController, "Контроллер управления авторизацией пользователей", "NodeJS Rest Controller")
-    Component(AuthService, "Сервис управления авторизацией пользователей", "NodeJS")
-    Component(AuthComponent, "Компонент управления авторизацией пользователей", "NodeJS")
-
     ' Маршрутизация запросов пользователей
     Component(RouteController, "Контроллер управления маршрутизацией запросов", "NodeJS Rest Controller")
     Component(RouteService, "Сервис управления маршрутизацией запросов", "NodeJS")
     Component(RouteComponent, "Компонент управления маршрутизацией запросов", "NodeJS")
-
-    ' @todo Тут можно добавить еще восстановление пароля и получение информации о пользователе
 }
-
-' Связи управления авторизацией пользователя
-Rel(WebApp, AuthController, "Делает запросы авторизации пользователей")
-Rel(AuthController, AuthService, "Вызывает бизнес-логику")
-Rel(AuthService, AuthComponent, "Читает/записывает/удаляет данные об авторизации")
-Rel(AuthComponent, redis, "Данные об авторизации")
-Rel(AuthComponent, db, "Данные о пользователе и его ролях")
 
 ' Связи маршрутизации запросов пользователей
 Rel(WebApp, RouteController, "Делает запросы к api")

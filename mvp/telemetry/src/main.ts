@@ -15,7 +15,7 @@ async function bootstrap() {
           brokers: [process.env.KAFKA_BROKER || 'localhost:9092']
         },
         consumer: {
-          groupId: process.env.CONSUMER || 'default',
+          groupId: process.env.CONSUMER || 'default_telemetry',
         },
       }
     }

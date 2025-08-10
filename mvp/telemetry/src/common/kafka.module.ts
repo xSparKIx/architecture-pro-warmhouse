@@ -6,18 +6,18 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'COMMAND_SERVICE',
+        name: 'TELEMETRY_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
           transport: Transport.KAFKA,
           options: {
             client: {
-              clientId: 'commands',
+              clientId: 'telemetry',
               brokers: [configService.get('KAFKA_BROKER') || 'localhost:9092']
             },
             consumer: {
-              groupId: configService.get('CONSUMER') || 'default',
+              groupId: configService.get('CONSUMER') || 'default_telemetry',
               allowAutoTopicCreation: true,
             }
           }

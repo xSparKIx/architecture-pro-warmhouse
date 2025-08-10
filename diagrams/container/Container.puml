@@ -76,7 +76,6 @@ Rel(APIGateway, HousesContainer, "Запросы управления домам
 Rel(APIGateway, LocationsContainer, "Запросы управления локациями", "JSON")
 Rel(APIGateway, ScenariosContainer, "Запросы урпавления пользовательскими сценариями", "JSON")
 Rel(APIGateway, AnaliticContainer, "Данные для аналитики и отчетности")
-Rel(APIGateway, redis, "Данные сессиях", "JSON")
 
 ' Связи системы управления телеметрией
 Rel(TelemetryContainer, UserDevicesSystem, "Данные от устройств умного дома")
@@ -88,6 +87,9 @@ Rel(DevicesContainer, broker, "Запросы управления устрой�
 
 ' Связи системы управления пользовательскими сценариями
 Rel(ScenariosContainer, broker, "Запросы на запуск сценариев")
+
+' Связи системы управления пользователями
+Rel(UsersContainer, redis, "Данные сессиях", "JSON")
 
 ' Связи бд
 Rel(DevicesContainer, db, "Данные об устройствах и их функционале")

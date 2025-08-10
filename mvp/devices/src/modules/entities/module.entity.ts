@@ -11,7 +11,7 @@ import { DeviceModule } from '../../modules-connect/entities/device_modules_conn
 
 @Entity('modules')
 export class Module {
-  @PrimaryGeneratedColumn('uuid') // UUID в качестве первичного ключа
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ 

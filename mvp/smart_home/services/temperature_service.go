@@ -37,7 +37,7 @@ func NewTemperatureService(baseURL string) *TemperatureService {
 
 // GetTemperature fetches temperature data for a specific location
 func (s *TemperatureService) GetTemperature(location string) (*TemperatureResponse, error) {
-	url := fmt.Sprintf("%s/temperature?location=%s", s.BaseURL, location)
+	url := fmt.Sprintf("%s/get-telemetry?location=%s", s.BaseURL, location)
 
 	resp, err := s.HTTPClient.Get(url)
 	if err != nil {
@@ -59,7 +59,7 @@ func (s *TemperatureService) GetTemperature(location string) (*TemperatureRespon
 
 // GetTemperatureByID fetches temperature data for a specific sensor ID
 func (s *TemperatureService) GetTemperatureByID(sensorID string) (*TemperatureResponse, error) {
-	url := fmt.Sprintf("%s/temperature/%s", s.BaseURL, sensorID)
+	url := fmt.Sprintf("%s/get-telemetry/%s", s.BaseURL, sensorID)
 
 	resp, err := s.HTTPClient.Get(url)
 	if err != nil {

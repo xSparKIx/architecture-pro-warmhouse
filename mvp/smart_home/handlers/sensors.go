@@ -18,13 +18,15 @@ import (
 type SensorHandler struct {
 	DB                 *db.DB
 	TemperatureService *services.TemperatureService
+	DevicesService     *services.DevicesService
 }
 
 // NewSensorHandler creates a new SensorHandler
-func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService) *SensorHandler {
+func NewSensorHandler(db *db.DB, temperatureService *services.TemperatureService, devicesService *services.DevicesService) *SensorHandler {
 	return &SensorHandler{
 		DB:                 db,
 		TemperatureService: temperatureService,
+		DevicesService:     devicesService,
 	}
 }
 
@@ -71,6 +73,7 @@ func (h *SensorHandler) GetSensors(c *gin.Context) {
 
 // GetSensorByID handles GET /api/v1/sensors/:id
 func (h *SensorHandler) GetSensorByID(c *gin.Context) {
+	// @todo Доделать переключение на сервис устройств
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sensor ID"})

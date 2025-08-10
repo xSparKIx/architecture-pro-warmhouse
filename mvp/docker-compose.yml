@@ -103,6 +103,8 @@ services:
         condition: service_healthy
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/smarthome
+      - TEMPERATURE_API_URL=http://telemetry:8081
+      - DEVICES_API_URL=http://devices:8083
     ports:
       - "8080:8080"
     restart: unless-stopped
