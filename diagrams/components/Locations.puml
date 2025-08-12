@@ -1,0 +1,88 @@
+@startuml Locations component diagram
+title Диаграмма компонентов управления локациями
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о домах, локациях и их связках")
+
+' Контейнер администрирования домов
+Container_Boundary(HousesContainer, "Администрирование домов") {
+    ' Управление домами
+    Component(HousesController, "Контроллер управления домами", "NestJS Rest Controller")
+    Component(HousesService, "Сервис управления домами", "NestJS")
+    Component(HousesComponent, "Компонент управления домами", "NestJS")
+
+    ' Привязка локаций к домам
+    Component(LocationsConnectController, "Контроллер привязки локаций к домам", "NestJS Rest Controller")
+    Component(LocationsConnectService, "Сервис привязки локаций к домам", "NestJS")
+    Component(LocationsConnectComponent, "Компонент привязки локаций к домам", "NestJS")
+
+    ' Привязка модулей к домам
+    Component(HModulesConnectController, "Контроллер привязки модулей к домам", "NestJS Rest Controller")
+    Component(HModulesConnectService, "Сервис привязки модулей к домам", "NestJS")
+    Component(HModulesConnectComponent, "Компонент привязки модулей к домам", "NestJS")
+
+    ' Привязка устройств к домам
+    Component(HDevicesConnectController, "Контроллер привязки устройств к домам", "NestJS Rest Controller")
+    Component(HDevicesConnectService, "Сервис привязки устройств к домам", "NestJS")
+    Component(HDevicesConnectComponent, "Компонент привязки устройств к домам", "NestJS")
+}
+
+' Контейнер администрирования локаций
+Container_Boundary(LocationsContainer, "Администрирование локаций") {
+    ' Управление локациями
+    Component(LocationsController, "Контроллер управления локациями", "NestJS Rest Controller")
+    Component(LocationsService, "Сервис управления локациями", "NestJS")
+    Component(LocationsComponent, "Компонент управления локациями", "NestJS")
+
+    ' Привязка модуля к локациям
+    Component(LModulesConnectController, "Контроллер привязки модулей к локациям", "NestJS Rest Controller")
+    Component(LModulesConnectService, "Сервис привязки модулей к локациям", "NestJS")
+    Component(LModulesConnectComponent, "Компонент привязки модулей к локациям", "NestJS")
+
+    ' Привязка устройств к локациям
+    Component(LDevicesConnectController, "Контроллер привязки устройств к локациям", "NestJS Rest Controller")
+    Component(LDevicesConnectService, "Сервис привязки устройств к локациям", "NestJS")
+    Component(LDevicesConnectComponent, "Компонент привязки устройств к локациям", "NestJS")
+}
+
+' Связи контейнера администрирования домов
+Rel(APIGateway, HousesController, "Делает запросы управления домами")
+Rel(HousesController, HousesService, "Вызывает бизнес-логику")
+Rel(HousesService, HousesComponent, "Читает/записывает/удаляет данные о домах")
+Rel(HousesComponent, db, "Данные о домах")
+
+Rel(APIGateway, LocationsConnectController, "Делает запросы на привязку локаций к домам")
+Rel(LocationsConnectController, LocationsConnectService, "Вызывает бизнес-логику")
+Rel(LocationsConnectService, LocationsConnectComponent, "Читает/записывает/удаляет данные о связи локации с домами")
+Rel(LocationsConnectComponent, db, "Данные о связи локаций с домами")
+
+Rel(APIGateway, HModulesConnectController, "Делает запросы на привязку модулей к домам")
+Rel(HModulesConnectController, HModulesConnectService, "Вызывает бизнес-логику")
+Rel(HModulesConnectService, HModulesConnectComponent, "Читает/записывает/удаляет данные о связи модулей с домами")
+Rel(HModulesConnectComponent, db, "Данные о связи модулей с домами")
+
+Rel(APIGateway, HDevicesConnectController, "Делает запросы на привязку устройств к домам")
+Rel(HDevicesConnectController, HDevicesConnectService, "Вызывает бизнес-логику")
+Rel(HDevicesConnectService, HDevicesConnectComponent, "Читает/записывает/удаляет данные о связи устройств с домами")
+Rel(HDevicesConnectComponent, db, "Данные о связи устройств с домами")
+
+' Связи контейнера администрирования локаций
+Rel(APIGateway, LocationsController, "Делает запросы управления локациями")
+Rel(LocationsController, LocationsService, "Вызывает бизнес-логику")
+Rel(LocationsService, LocationsComponent, "Читает/записывает/удаляет данные о локациях")
+Rel(LocationsComponent, db, "Данные о локациях")
+
+Rel(APIGateway, LModulesConnectController, "Делает запросы на привязку модулей к локациям")
+Rel(LModulesConnectController, LModulesConnectService, "Вызывает бизнес-логику")
+Rel(LModulesConnectService, LModulesConnectComponent, "Читает/записывает/удаляет данные о связи модулей с локациям")
+Rel(LModulesConnectComponent, db, "Данные о связи модулей с локациям")
+
+Rel(APIGateway, LDevicesConnectController, "Делает запросы на привязку устройств к локациям")
+Rel(LDevicesConnectController, LDevicesConnectService, "Вызывает бизнес-логику")
+Rel(LDevicesConnectService, LDevicesConnectComponent, "Читает/записывает/удаляет данные о связи устройств с локациям")
+Rel(LDevicesConnectComponent, db, "Данные о связи устройств с локациям")
+
+@endmul

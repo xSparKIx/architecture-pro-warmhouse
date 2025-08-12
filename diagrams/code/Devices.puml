@@ -1,0 +1,62 @@
+@startuml Devices code
+title Диаграмма кода контроллера управления устройствами
+
+' Контроллер управления устройствами
+class DevicesController {
+  +devicesService: DevicesService
+  +create(createDeviceDto: CreateDeviceDto): Promise<Device>
+  +update(id: string, updateDeviceDto: UpdateDeviceDto): Promise<UpdateResult>
+  +remove(id: string): Promise<DeleteResult>
+  +findAll(): Promise<Device[]>
+  +findById(id: string): Promise<Device>
+}
+
+' Сервис управления устройствами
+class DevicesService {
+    +deviceRepository: Repository<Device>
+    +create(createDeviceDto: CreateDeviceDto): Promise<Device>
+    +update(id: string, updateDeviceDto: UpdateDeviceDto): Promise<UpdateResult>
+    +delete(id: string): Promise<DeleteResult>
+    +findAll(): Promise<Device[]>
+    +findById(id: string): Promise<Device>
+}
+
+' DTO создания устройств
+class CreateDeviceDto {
+  +name: string
+  +description: string
+  +type: string
+  +serial_number: string
+  +status: string
+}
+
+' DTO обновления устройств
+class UpdateDeviceDto {
+  +name: string
+  +description: string
+  +type: string
+  +serial_number: string
+  +status: string
+}
+
+' Сущность устройства
+class Device {
+  +id: string;
+  +name: string;
+  +type: string;
+  +description: string;
+  +serial_number: string;
+  +status: string;
+  +createdAt: Date;
+  +updatedAt: Date;
+}
+
+DevicesController --> DevicesService : зависит от >
+DevicesController --> CreateDeviceDto : использует >
+DevicesController --> UpdateDeviceDto : использует >
+DevicesService --> CreateDeviceDto : использует >
+DevicesService --> UpdateDeviceDto : использует >
+DevicesController --> Device : использует >
+DevicesService --> Device : использует >
+
+@enduml

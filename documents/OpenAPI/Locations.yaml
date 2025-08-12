@@ -1,0 +1,519 @@
+openapi: 3.1.0
+info:
+  title: API управления локациями
+  description: API для управления домами, локациями и их связями с модулями и устройствами
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+    description: Production API server
+
+tags:
+  - name: Houses
+    description: Управление домами
+  - name: Locations
+    description: Управление локациями
+  - name: HouseConnections
+    description: Привязки к домам (локации, модули, устройства)
+  - name: LocationConnections
+    description: Привязки к локациям (модули, устройства)
+
+paths:
+  # Управление домами
+  /houses:
+    get:
+      tags: [Houses]
+      summary: Получить список домов
+      responses:
+        200:
+          description: Список домов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/House'
+        500:
+          description: Ошибка сервера
+    
+    post:
+      tags: [Houses]
+      summary: Создать новый дом
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseCreate'
+      responses:
+        201:
+          description: Дом создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/House'
+        400:
+          description: Неверные параметры запроса
+        409:
+          description: Дом с таким именем уже существует
+
+  /houses/{houseId}:
+    get:
+      tags: [Houses]
+      summary: Получить информацию о доме
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Информация о доме
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/House'
+        404:
+          description: Дом не найден
+    
+    put:
+      tags: [Houses]
+      summary: Обновить информацию о доме
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseUpdate'
+      responses:
+        200:
+          description: Информация о доме обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/House'
+        404:
+          description: Дом не найден
+    
+    delete:
+      tags: [Houses]
+      summary: Удалить дом
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Дом удален
+        404:
+          description: Дом не найден
+        423:
+          description: Дом содержит привязанные локации/устройства
+
+  # Управление локациями
+  /locations:
+    get:
+      tags: [Locations]
+      summary: Получить список локаций
+      responses:
+        200:
+          description: Список локаций
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+    
+    post:
+      tags: [Locations]
+      summary: Создать новую локацию
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationCreate'
+      responses:
+        201:
+          description: Локация создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+
+  /locations/{locationId}:
+    get:
+      tags: [Locations]
+      summary: Получить информацию о локации
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Информация о локации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+    
+    delete:
+      tags: [Locations]
+      summary: Удалить локацию
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Локация удалена
+        423:
+          description: Локация содержит привязанные устройства
+
+  # Привязки к домам
+  /houses/{houseId}/locations:
+    post:
+      tags: [HouseConnections]
+      summary: Привязать локацию к дому
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LocationBinding'
+      responses:
+        201:
+          description: Локация привязана
+        404:
+          description: Дом или локация не найдены
+  /houses/{houseId}/locations/{locationId}:
+    delete:
+      tags: [HouseConnections]
+      summary: Отвязать локацию от дома
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Локация отвязана
+        400:
+          description: Переданы некорректные данные
+        404:
+          description: Локация с переданным uuid найдена не была
+  /houses/{houseId}/modules:
+    post:
+      tags: [HouseConnections]
+      summary: Привязать модуль к дому
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleBinding'
+      responses:
+        201:
+          description: Модуль привязан
+        404:
+          description: Модуль с переданным ID найден не был
+  /houses/{houseId}/modules/{moduleId}:
+    delete:
+      tags: [HouseConnections]
+      summary: Отвязать модуль от дома
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Модуль отвязан
+        400:
+          description: Переданы некорректные данные
+        404:
+          description: Модуль с переданным uuid найдено не было
+  /houses/{houseId}/devices:
+    post:
+      tags: [HouseConnections]
+      summary: Привязать устройство к дому
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceBinding'
+      responses:
+        201:
+          description: Устройство привязано
+        404:
+          description: Устройство с переданным ID найдено не было
+  /houses/{houseId}/devices/{deviceId}:
+    delete:
+      tags: [HouseConnections]
+      summary: Отвязать устройство от дома
+      parameters:
+        - name: houseId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Устройство отвязано
+        400:
+          description: Переданы некорректные данные
+        404:
+          description: Устройство с переданным uuid найдено не было
+  # Привязки к локациям
+  /locations/{locationId}/modules:
+    post:
+      tags: [LocationConnections]
+      summary: Привязать модуль к локации
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModuleBinding'
+      responses:
+        201:
+          description: Модуль привязан
+  /locations/{locationId}/devices:
+    post:
+      tags: [LocationConnections]
+      summary: Привязать устройство к локации
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceBinding'
+      responses:
+        201:
+          description: Устройство привязано
+  /locations/{locationId}/devices/{deviceId}:
+    delete:
+      tags: [LocationConnections]
+      summary: Отвязать устройство от локации
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Устройство отвязано
+        400:
+          description: Переданы некорректные данные
+        404:
+          description: Устройство с переданным uuid найдено не было
+  /locations/{locationId}/modules/{moduleId}:
+    delete:
+      tags: [LocationConnections]
+      summary: Отвязать модуль от локации
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: moduleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Модуль отвязан
+        400:
+          description: Переданы некорректные данные
+        404:
+          description: Модуль с переданным uuid найден не был
+components:
+  schemas:
+    # Основные схемы
+    House:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name]
+    
+    HouseCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+      required: [name]
+    
+    HouseUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        address:
+          type: string
+    
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [room, floor, zone]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, type]
+    
+    LocationCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [room, floor, zone]
+      required: [name, type]
+    
+    # Модели привязок
+    LocationBinding:
+      type: object
+      properties:
+        locationId:
+          type: string
+          format: uuid
+      required: [locationId]
+    
+    ModuleBinding:
+      type: object
+      properties:
+        moduleId:
+          type: string
+          format: uuid
+      required: [moduleId]
+    
+    DeviceBinding:
+      type: object
+      properties:
+        deviceId:
+          type: string
+          format: uuid
+      required: [deviceId]

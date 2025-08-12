@@ -1,0 +1,27 @@
+@startuml API components diagram
+title Диаграмма компонентов API
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(WebApp, "Веб-приложение", "JavaScript и выбранный фреймворк", "Веб-интерфейс для управления умным домом")
+Container(UsedContainer, "Сервис к которому идет запрос")
+Container(UsersContainer, "Администрирование пользователей", "NestJS", "Управляет аутентификацией пользователей")
+
+' Контейнер API Gateway
+Container_Boundary(TelemetryContainer, "API Gateway") {
+    ' Маршрутизация запросов пользователей
+    Component(RouteController, "Контроллер управления маршрутизацией запросов", "NestJS Rest Controller")
+    Component(RouteService, "Сервис управления маршрутизацией запросов", "NestJS")
+    Component(RouteComponent, "Компонент управления маршрутизацией запросов", "NestJS")
+}
+
+' Связи маршрутизации запросов пользователей
+Rel(WebApp, RouteController, "Делает запросы к api")
+Rel(RouteController, RouteService, "Вызывает бизнес-логику")
+Rel(RouteService, RouteComponent, "Проверяет авторизацию и перенаправляет запрос нужному сервису")
+Rel(RouteComponent, UsedContainer, "Перенаправленный запрос")
+
+Rel(RouteController, UsersContainer, "Производит авторизацию и аутентификацию пользователя")
+
+@endmul

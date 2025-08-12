@@ -1,0 +1,108 @@
+asyncapi: 3.0.0
+info:
+  title: API управления устройствами
+  version: 1.0.0
+  description: |
+    Асинхронное API для управления устройствами умного дома через Kafka.
+    Включает обработку команд и интеграцию с функционалом устройств.
+
+servers:
+  iot-kafka:
+    host: kafka://iot-broker:9092
+    protocol: kafka
+    description: Основной брокер для команд устройствам
+
+channels:
+  device.commands:
+    address: iot.device.commands.{deviceType}
+    description: Канал для отправки команд устройствам
+    parameters:
+      deviceType:
+        description: Тип устройства (light, thermostat, sensor)
+    messages:
+      deviceCommand:
+        $ref: '#/components/messages/DeviceCommand'
+
+  function.trigger:
+    address: iot.function.trigger
+    description: Триггеры выполнения функций устройств
+    messages:
+      functionTrigger:
+        $ref: '#/components/messages/FunctionTrigger'
+
+operations:
+  # Отправка команд на устройства
+  sendDeviceCommand:
+    action: send
+    channel:
+      $ref: '#/channels/device.commands'
+    description: Отправка команд на физические устройства
+
+  # Получение команд для выполнения
+  receiveFunctionTrigger:
+    action: receive
+    channel:
+      $ref: '#/channels/function.trigger'
+    description: Получение триггеров (работа по таймеру, событию, датчику) для выполнения функций устройств
+
+components:
+  messages:
+    DeviceCommand:
+      name: deviceCommand
+      title: Команда устройству
+      summary: Управляющее воздействие на конкретное устройство
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeviceCommandPayload'
+
+    FunctionTrigger:
+      name: functionTrigger
+      title: Триггер функции
+      summary: Активация предустановленного функционала устройства
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/FunctionTriggerPayload'
+
+  schemas:
+    DeviceCommandPayload:
+      type: object
+      required: [commandId, deviceId]
+      properties:
+        commandId:
+          type: string
+          format: uuid
+        deviceId:
+          type: string
+          format: uuid
+        parameters:
+          type: object
+          additionalProperties: true
+        scheduledAt:
+          type: string
+          format: date-time
+
+    FunctionTriggerPayload:
+      type: object
+      required: [functionId, triggerType]
+      properties:
+        functionId:
+          type: string
+          format: uuid
+        triggerType:
+          type: string
+          enum: [timer, sensor, manual]
+        context:
+          type: object
+          properties:
+            userId:
+              type: string
+              format: uuid
+            deviceIds:
+              type: array
+              items:
+                type: string
+
+  securitySchemes:
+    scramSha256:
+      type: scramSha256
+      description: SASL/SCRAM-SHA-256 аутентификация

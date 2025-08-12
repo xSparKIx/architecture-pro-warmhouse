@@ -1,0 +1,104 @@
+@startuml Container diagram
+title Диаграмма контейнеров "Тёплый дом"
+
+top to bottom direction
+
+!include ../templates/C4_Container.puml
+
+' -----------------
+' Внешние сущности
+' -----------------
+
+Person(user, "Пользователь", "Пользователь умного дома")
+Person(support, "Команда поддержки", "Команда по обслуживанию клиентов")
+Person(manager, "Команда продажи", "Команда по продажам и маркетингу")
+
+Container_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
+
+' --------
+' Системы
+' --------
+
+System_Boundary(SmartHomeSystem, "Система управления умным домом") {
+    ' Контейнеры
+    Container(WebApp, "Веб-приложение", "JavaScript и выбранный фреймворк", "Веб-интерфейс для управления умным домом")
+    Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+    ContainerDb(db, "База данных", "PostgreSql 16")
+    Container(broker, "Брокер сообщений", "Kafka", "Хранит информацию о телеметрии устройств")
+    ContainerDb(redis, "База данных", "Redis", "Хранит информацию о сессиях пользователей и кеши")
+
+    ' Системы
+    System_Boundary(DevicesSystem, "Управление устройствами") {
+        Container(DevicesContainer, "Администрирование устройств")
+        Container(ModulesContainer, "Администрирование модулей")
+    }
+    
+    System_Boundary(TelemetrySystem, "Управление телеметрией") {
+        Container(TelemetryContainer, "Сбор телеметрии")
+    }
+
+    System_Boundary(UsersSystem, "Управление пользователями") {
+        Container(UsersContainer, "Администрирование пользователей")
+    }
+
+    System_Boundary(LocationsSystem, "Управление локациями") {
+        Container(HousesContainer, "Администрирование домов")
+        Container(LocationsContainer, "Администрирование локаций")
+    }
+
+    System_Boundary(ScenariosSystem, "Управление пользовательскими сценариями") {
+        Container(ScenariosContainer, "Администрирование пользовательских сценариев")
+    }
+
+    System_Boundary(MonitoringSystem, "Мониторинг умного дома") {
+        Container(AnaliticContainer, "Аналитика и отчетность")
+    }
+}
+
+' --------------
+' Потоки данных
+' --------------
+
+' Связи пользователей
+Rel(user, WebApp, "Использует для управления умным домом")
+Rel(support, WebApp, "Использует для управления пользователями и их оборудованием")
+Rel(manager, WebApp, "Использует для получения информации о пользователях и их оборудовании")
+
+' Связи интерфейсов с API
+Rel(WebApp, APIGateway, "Выполняет вызовы Api")
+
+' Связи API
+Rel(APIGateway, DevicesContainer, "Запросы управления устройствами", "JSON")
+Rel(APIGateway, ModulesContainer, "Запросы управления модулями", "JSON")
+Rel(APIGateway, TelemetryContainer, "Запросы на получение телеметрии")
+Rel(APIGateway, UsersContainer, "Запросы управления пользователями", "JSON")
+Rel(APIGateway, HousesContainer, "Запросы управления домами", "JSON")
+Rel(APIGateway, LocationsContainer, "Запросы управления локациями", "JSON")
+Rel(APIGateway, ScenariosContainer, "Запросы урпавления пользовательскими сценариями", "JSON")
+Rel(APIGateway, AnaliticContainer, "Запросы на построение аналитик и отчетов", "JSON")
+
+' Связи системы управления телеметрией
+Rel(TelemetryContainer, UserDevicesSystem, "Данные от устройств умного дома")
+Rel(TelemetryContainer, broker, "Данные о телеметрии устройств")
+
+' Связи системы управления устройствами
+Rel(DevicesContainer, UserDevicesSystem, "Запросы управления устройствами")
+Rel(DevicesContainer, broker, "Запросы управления устройствами")
+
+' Связи системы управления пользовательскими сценариями
+Rel(ScenariosContainer, broker, "Запросы на запуск сценариев")
+
+' Связи системы управления пользователями
+Rel(UsersContainer, redis, "Данные сессиях", "JSON")
+
+' Связи бд
+Rel(DevicesContainer, db, "Данные об устройствах и их функционале")
+Rel(ModulesContainer, db, "Данные о модулях и их связе с устройствами")
+Rel(UsersContainer, db, "Данные о пользователях, ролях и их связях")
+Rel(HousesContainer, db, "Данные о домах и их связях")
+Rel(LocationsContainer, db, "Данные о локациях и их связях")
+Rel(ScenariosContainer, db, "Данные о пользовательских сценариях и их связях")
+Rel(AnaliticContainer, db, "Данные для построения аналитики и отчетности")
+Rel(TelemetryContainer, db, "Данные о телеметрии устройств")
+
+@enduml

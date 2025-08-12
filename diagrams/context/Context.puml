@@ -1,0 +1,17 @@
+@startuml Context diagram
+title Диаграмма контекста "Тёплый дом"
+
+top to bottom direction
+
+!include ../templates/C4_Context.puml
+
+Person(users, "Пользователи", "Пользователи умного дома")
+Person(specialists, "Специалисты", "Специалисты, занимающиеся подключением системы")
+
+System(SmartHomeSystem, "Система умного дома", "Система управляет умным домом и датчиками")
+System_Ext(sensors, "Датчики", "Датчики умного дома", "Использует REST API, формат данных JSON")
+
+Rel(users, SmartHomeSystem, "Получает информацию о температуре, включает/отключает отопление")
+Rel(specialists, SmartHomeSystem, "Подключение датчиков к системе умного дома")
+Rel(SmartHomeSystem, sensors, "Запрашивает информацию о датчиках и температуре")
+@enduml

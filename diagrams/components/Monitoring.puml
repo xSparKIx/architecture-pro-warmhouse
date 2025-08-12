@@ -1,0 +1,23 @@
+@startuml Monitoring component diagram
+title Диаграмма компонентов мониторинга
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+ContainerDb(db, "База данных", "PostgreSql 16", "Хранит данные для построения аналитики и отчетности")
+
+' Контейнер аналитики и отчетности
+Container_Boundary(UsersContainer, "Аналитика и отчетность") {
+    Component(MonitoringController, "Контроллер построения аналити и отчетности", "NestJS Rest Controller")
+    Component(MonitoringService, "Сервис построения аналити и отчетности", "NestJS")
+    Component(MonitoringComponent, "Компонент построения аналити и отчетности", "NestJS")
+}
+
+' Связи
+Rel(APIGateway, MonitoringController, "Делает запросы на построение аналитики и отчетности")
+Rel(MonitoringController, MonitoringService, "Вызывает бизнес-логику")
+Rel(MonitoringService, MonitoringComponent, "Читает данные для построения аналитики и отчетности")
+Rel(MonitoringComponent, db, "Данные для построения аналитики и отчетности")
+
+@endmul

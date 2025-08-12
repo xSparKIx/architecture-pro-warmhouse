@@ -1,0 +1,40 @@
+@startuml Telemetry components diagram
+title Диаграмма компонентов системы телеметрии
+
+!include ../templates/C4_Component.puml
+
+' Внешние сущности
+Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
+Container(broker, "Брокер сообщений", "Kafka", "Хранит информацию о телеметрии устройств")
+ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о телеметрии устройств")
+System_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
+
+' Контейнер сбора телеметрии
+Container_Boundary(TelemetryContainer, "Сбор телеметрии") {
+    ' Сбор телеметрии
+    Component(TelemetryController, "Контроллер сбора телеметрии", "NestJS Rest Controller")
+    Component(TelemetryService, "Сервис сбора телеметрии", "NestJS")
+    Component(TelemetryComponent, "Компонент сбора телеметрии", "NestJS")
+
+    ' Запись телеметрии
+    Component(TelemetryWriteController, "Контроллер управления телеметрией", "NestJS Rest Controller")
+    Component(TelemetryWriteConsumer, "Потребитель (Consumer) управления телеметрией", "NestJS Rest Controller", "Обрабатывает события изменения телеметрии")
+    Component(TelemetryWriteService, "Сервис управления телеметрией", "NestJS")
+    Component(TelemetryWriteComponent, "Компонент управления телеметрией", "NestJS")
+}
+
+' Связи
+Rel(APIGateway, TelemetryController, "Делает запросы на получение телеметрии")
+Rel(TelemetryController, TelemetryService, "Вызывает бизнес-логику")
+Rel(TelemetryService, TelemetryComponent, "Читает/записывает данные о телеметрии")
+Rel(TelemetryComponent, broker, "Данные о телеметрии")
+Rel(TelemetryComponent, UserDevicesSystem, "Данные о телеметрии")
+
+Rel(APIGateway, TelemetryWriteController, "Делает запросы на запись телеметрии")
+Rel(broker, TelemetryWriteConsumer, "Обновление данных телеметрии")
+Rel(TelemetryWriteController, TelemetryWriteService, "Вызывает бизнес-логику")
+Rel(TelemetryWriteService, TelemetryWriteComponent, "Читает/записывает/удаляет данные о телеметрии")
+Rel(TelemetryWriteComponent, db, "Данные о телеметрии")
+Rel(TelemetryWriteConsumer, TelemetryWriteService, "Вызывает бизнес-логику")
+
+@endmul

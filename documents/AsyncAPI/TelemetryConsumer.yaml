@@ -1,0 +1,111 @@
+asyncapi: 3.0.0
+info:
+  title: API управления телеметрией
+  version: 1.0.0
+  description: |
+    Асинхронное API для сбора и обработки телеметрии устройств умного дома.
+    Включает каналы для сырых данных и агрегированных метрик.
+
+servers:
+  telemetry-kafka:
+    host: kafka://telemetry-broker:9092
+    protocol: kafka-secure
+    description: Брокер для телеметрических данных
+
+channels:
+  # Рассылаем телеметрию полученную от устройств
+  raw.telemetry:
+    address: iot.telemetry.raw
+    description: Канал для сырых данных телеметрии от устройств
+    messages:
+      rawTelemetryEvent:
+        $ref: '#/components/messages/RawTelemetryEvent'
+
+  # Рассылаем обработанные данные от устройств (например для мониторинга)
+  processed.telemetry:
+    address: iot.telemetry.processed.{aggregationType}
+    parameters:
+      aggregationType:
+        description: Тип агрегации (raw, minute, hour, day)
+    messages:
+      processedTelemetry:
+        $ref: '#/components/messages/ProcessedTelemetry'
+
+operations:
+  # Публикация сырых данных для записи
+  publishRawTelemetry:
+    action: send
+    channel:
+      $ref: '#/channels/raw.telemetry'
+    description: Отправка сырых данных телеметрии от устройств
+
+  # Потребление сырых данных (TelemetryWriteConsumer)
+  consumeRawTelemetry:
+    action: receive
+    channel:
+      $ref: '#/channels/raw.telemetry'
+    description: Получение сырых данных для обработки и сохранения
+
+  # Публикация обработанных данных для остальных сервисов
+  publishProcessedTelemetry:
+    action: send
+    channel:
+      $ref: '#/channels/processed.telemetry'
+    description: Отправка агрегированных данных телеметрии
+
+components:
+  messages:
+    RawTelemetryEvent:
+      name: rawTelemetryEvent
+      title: Сырое событие телеметрии
+      summary: Необработанные данные с устройств
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RawTelemetryPayload'
+
+    ProcessedTelemetry:
+      name: processedTelemetry
+      title: Обработанная телеметрия
+      summary: Агрегированные и нормализованные данные
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ProcessedTelemetryPayload'
+
+  schemas:
+    RawTelemetryPayload:
+      type: object
+      required: [deviceId, timestamp, data]
+      properties:
+        deviceId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        data:
+          type: object
+
+    ProcessedTelemetryPayload:
+      type: object
+      required: [batchId, deviceIds, timeRange]
+      properties:
+        batchId:
+          type: string
+          format: uuid
+        # Данные телеметрии по каждому deviceID
+        data:
+          type: object
+        timeRange:
+          type: object
+          properties:
+            from:
+              type: string
+              format: date-time
+            to:
+              type: string
+              format: date-time
+
+  securitySchemes:
+    scramSha512:
+      type: scramSha512
+      description: SASL/SCRAM-SHA-512 аутентификация

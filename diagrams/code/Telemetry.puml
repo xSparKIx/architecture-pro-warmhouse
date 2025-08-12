@@ -1,0 +1,43 @@
+@startuml Telemetry code
+title Диаграмма кода контроллера записи телеметрией
+
+' Контроллер управления телеметрией
+class TelemetryController {
+  +telemetryService: TelemetryService
+  +create(createTelemetryDto: CreateTelemetryDto): Promise<Telemetry>
+  +remove(id: string): Promise<DeleteResult>
+  +getByDeviceId(deviceId: string): Promise<Telemetry>
+  +get(options: Record<string, any>): Promise<Telemetry[]>
+}
+
+' Сервис управления телеметрией
+class TelemetryService {
+  +telemetryRepository: Repository<Telemetry>
+  +create(createTelemetryDto: CreateTelemetryDto): Promise<Telemetry>
+  +remove(id: string): Promise<DeleteResult>
+  +getByDeviceId(deviceId: string): Promise<Telemetry>
+  +getByDeviceIds(ids: string[]): Promise<Telemetry[]>
+}
+
+' DTO создания телеметрии
+class CreateTelemetryDto {
+  +deviceId: string
+  +data: Record<string, any>
+}
+
+' Сущность телеметрии
+class Telemetry {
+  +id: number;
+  +deviceId: string;
+  +data: Record<string, any>;
+  +createdAt: Date;
+  +updatedAt: Date;
+}
+
+TelemetryController --> TelemetryService : зависит от >
+TelemetryController --> CreateTelemetryDto : использует >
+TelemetryService --> CreateTelemetryDto : использует >
+TelemetryController --> Telemetry : использует >
+TelemetryService --> Telemetry : использует >
+
+@enduml
