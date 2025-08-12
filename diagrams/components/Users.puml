@@ -11,24 +11,24 @@ ContainerDb(redis, "База данных", "Redis", "Хранит информ�
 ' Контейнер администрирования пользователей
 Container_Boundary(UsersContainer, "Администрирование пользователей") {
     ' Управление учетными записями пользователей
-    Component(UsersController, "Контроллер управления пользователями", "NodeJS Rest Controller")
-    Component(UsersService, "Сервис управления пользователями", "NodeJS")
-    Component(UsersComponent, "Компонент управления пользователями", "NodeJS")
+    Component(UsersController, "Контроллер управления пользователями", "NestJS Rest Controller")
+    Component(UsersService, "Сервис управления пользователями", "NestJS")
+    Component(UsersComponent, "Компонент управления пользователями", "NestJS")
 
     ' Управление ролями
-    Component(RolesController, "Контроллер управления ролями", "NodeJS Rest Controller")
-    Component(RolesService, "Сервис управления ролями", "NodeJS")
-    Component(RolesComponent, "Компонент управления ролями", "NodeJS")
+    Component(RolesController, "Контроллер управления ролями", "NestJS Rest Controller")
+    Component(RolesService, "Сервис управления ролями", "NestJS")
+    Component(RolesComponent, "Компонент управления ролями", "NestJS")
 
     ' Привязка ролей к пользователю
-    Component(RolesConnectController, "Контроллер привязки ролей к пользователям", "NodeJS Rest Controller")
-    Component(RolesConnectService, "Сервис привязки ролей к пользователям", "NodeJS")
-    Component(RolesConnectComponent, "Компонент привязки ролей к пользователям", "NodeJS")
+    Component(RolesConnectController, "Контроллер привязки ролей к пользователям", "NestJS Rest Controller")
+    Component(RolesConnectService, "Сервис привязки ролей к пользователям", "NestJS")
+    Component(RolesConnectComponent, "Компонент привязки ролей к пользователям", "NestJS")
 
     ' Управление авторизацией пользователя
-    Component(AuthController, "Контроллер управления авторизацией пользователей", "NodeJS Rest Controller")
-    Component(AuthService, "Сервис управления авторизацией пользователей", "NodeJS")
-    Component(AuthComponent, "Компонент управления авторизацией пользователей", "NodeJS")
+    Component(AuthController, "Контроллер управления авторизацией пользователей", "NestJS Rest Controller")
+    Component(AuthService, "Сервис управления авторизацией пользователей", "NestJS")
+    Component(AuthComponent, "Компонент управления авторизацией пользователей", "NestJS")
 }
 
 ' Связи

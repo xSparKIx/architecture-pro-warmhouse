@@ -9,9 +9,9 @@ ContainerDb(db, "База данных", "PostgreSql 16", "Хранит данн
 
 ' Контейнер аналитики и отчетности
 Container_Boundary(UsersContainer, "Аналитика и отчетность") {
-    Component(MonitoringController, "Контроллер построения аналити и отчетности", "NodeJS Rest Controller")
-    Component(MonitoringService, "Сервис построения аналити и отчетности", "NodeJS")
-    Component(MonitoringComponent, "Компонент построения аналити и отчетности", "NodeJS")
+    Component(MonitoringController, "Контроллер построения аналити и отчетности", "NestJS Rest Controller")
+    Component(MonitoringService, "Сервис построения аналити и отчетности", "NestJS")
+    Component(MonitoringComponent, "Компонент построения аналити и отчетности", "NestJS")
 }
 
 ' Связи

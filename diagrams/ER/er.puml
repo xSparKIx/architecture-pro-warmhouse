@@ -10,6 +10,7 @@ entity "Устройство" as Device {
     name: varchar
     description: varchar
     serial_number: varchar
+    type: varchar
     status: varchar
     createdAt: timestamp
     updatedAt: timestamp
@@ -42,8 +43,9 @@ entity "Связь устройств с модулями" as DMRelation {
 entity "Телеметрия" as Telemetry {
     + id [PK]: uuid
     + deviceId [FK]: uuid
-    date: timestamp
-    metrics: JSONB
+    data: JSONB
+    createdAt: timestamp
+    updatedAt: timestamp
 }
 
 entity "Пользователь" as User {  
@@ -112,8 +114,6 @@ entity "Связь устройств с локациями" as DLRelation {
     + locationId [FK]: uuid
 }
 
-' @todo conditions и command должны быть других типов и вообще условия должны быть в отдельной таблице
-' @todo и тогда в схеме C4 их тоже надо будет прописать
 entity "Пользовательский сценарий" as Scenario {
     + id [PK]: uuid
     + name: varchar

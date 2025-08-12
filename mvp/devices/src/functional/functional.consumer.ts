@@ -4,7 +4,6 @@ import { FunctionalService } from "./functional.service";
 
 /**
  * Consumer функций устройств
- * @todo Возможно внести в схему
  */
 @Controller()
 export class FunctionalConsumer {
@@ -13,7 +12,6 @@ export class FunctionalConsumer {
     /**
      * Обработка запущенной команды устройства
      * @param id UUID выполняемой команды
-     * @todo Тут потом поменять на корректный id
      */
     @EventPattern('command_exec')
     handleCommand(id: string) {

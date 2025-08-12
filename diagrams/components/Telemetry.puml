@@ -12,14 +12,15 @@ System_Ext(UserDevicesSystem, "Устройства умного дома пол
 ' Контейнер сбора телеметрии
 Container_Boundary(TelemetryContainer, "Сбор телеметрии") {
     ' Сбор телеметрии
-    Component(TelemetryController, "Контроллер сбора телеметрии", "NodeJS Rest Controller")
-    Component(TelemetryService, "Сервис сбора телеметрии", "NodeJS")
-    Component(TelemetryComponent, "Компонент сбора телеметрии", "NodeJS")
+    Component(TelemetryController, "Контроллер сбора телеметрии", "NestJS Rest Controller")
+    Component(TelemetryService, "Сервис сбора телеметрии", "NestJS")
+    Component(TelemetryComponent, "Компонент сбора телеметрии", "NestJS")
 
     ' Запись телеметрии
-    Component(TelemetryWriteController, "Контроллер записи телеметрии", "NodeJS Rest Controller")
-    Component(TelemetryWriteService, "Сервис записи телеметрии", "NodeJS")
-    Component(TelemetryWriteComponent, "Компонент записи телеметрии", "NodeJS")
+    Component(TelemetryWriteController, "Контроллер управления телеметрией", "NestJS Rest Controller")
+    Component(TelemetryWriteConsumer, "Потребитель (Consumer) управления телеметрией", "NestJS Rest Controller", "Обрабатывает события изменения телеметрии")
+    Component(TelemetryWriteService, "Сервис управления телеметрией", "NestJS")
+    Component(TelemetryWriteComponent, "Компонент управления телеметрией", "NestJS")
 }
 
 ' Связи
@@ -30,9 +31,10 @@ Rel(TelemetryComponent, broker, "Данные о телеметрии")
 Rel(TelemetryComponent, UserDevicesSystem, "Данные о телеметрии")
 
 Rel(APIGateway, TelemetryWriteController, "Делает запросы на запись телеметрии")
-Rel(broker, TelemetryWriteController, "Обновление данных телеметрии")
+Rel(broker, TelemetryWriteConsumer, "Обновление данных телеметрии")
 Rel(TelemetryWriteController, TelemetryWriteService, "Вызывает бизнес-логику")
 Rel(TelemetryWriteService, TelemetryWriteComponent, "Читает/записывает/удаляет данные о телеметрии")
 Rel(TelemetryWriteComponent, db, "Данные о телеметрии")
+Rel(TelemetryWriteConsumer, TelemetryWriteService, "Вызывает бизнес-логику")
 
 @endmul

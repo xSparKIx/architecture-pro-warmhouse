@@ -7,47 +7,45 @@ title Диаграмма компонентов управления локац�
 Container(APIGateway, "API Gateway", "GoLang 1.22", "Обрабатывает запросы пользователей")
 ContainerDb(db, "База данных", "PostgreSql 16", "Хранит информацию о домах, локациях и их связках")
 
-' @todo Посмотреть примеры создания диаграмм из урока, про фитнесклуб
-
 ' Контейнер администрирования домов
 Container_Boundary(HousesContainer, "Администрирование домов") {
     ' Управление домами
-    Component(HousesController, "Контроллер управления домами", "NodeJS Rest Controller")
-    Component(HousesService, "Сервис управления домами", "NodeJS")
-    Component(HousesComponent, "Компонент управления домами", "NodeJS")
+    Component(HousesController, "Контроллер управления домами", "NestJS Rest Controller")
+    Component(HousesService, "Сервис управления домами", "NestJS")
+    Component(HousesComponent, "Компонент управления домами", "NestJS")
 
     ' Привязка локаций к домам
-    Component(LocationsConnectController, "Контроллер привязки локаций к домам", "NodeJS Rest Controller")
-    Component(LocationsConnectService, "Сервис привязки локаций к домам", "NodeJS")
-    Component(LocationsConnectComponent, "Компонент привязки локаций к домам", "NodeJS")
+    Component(LocationsConnectController, "Контроллер привязки локаций к домам", "NestJS Rest Controller")
+    Component(LocationsConnectService, "Сервис привязки локаций к домам", "NestJS")
+    Component(LocationsConnectComponent, "Компонент привязки локаций к домам", "NestJS")
 
     ' Привязка модулей к домам
-    Component(HModulesConnectController, "Контроллер привязки модулей к домам", "NodeJS Rest Controller")
-    Component(HModulesConnectService, "Сервис привязки модулей к домам", "NodeJS")
-    Component(HModulesConnectComponent, "Компонент привязки модулей к домам", "NodeJS")
+    Component(HModulesConnectController, "Контроллер привязки модулей к домам", "NestJS Rest Controller")
+    Component(HModulesConnectService, "Сервис привязки модулей к домам", "NestJS")
+    Component(HModulesConnectComponent, "Компонент привязки модулей к домам", "NestJS")
 
     ' Привязка устройств к домам
-    Component(HDevicesConnectController, "Контроллер привязки устройств к домам", "NodeJS Rest Controller")
-    Component(HDevicesConnectService, "Сервис привязки устройств к домам", "NodeJS")
-    Component(HDevicesConnectComponent, "Компонент привязки устройств к домам", "NodeJS")
+    Component(HDevicesConnectController, "Контроллер привязки устройств к домам", "NestJS Rest Controller")
+    Component(HDevicesConnectService, "Сервис привязки устройств к домам", "NestJS")
+    Component(HDevicesConnectComponent, "Компонент привязки устройств к домам", "NestJS")
 }
 
 ' Контейнер администрирования локаций
 Container_Boundary(LocationsContainer, "Администрирование локаций") {
     ' Управление локациями
-    Component(LocationsController, "Контроллер управления локациями", "NodeJS Rest Controller")
-    Component(LocationsService, "Сервис управления локациями", "NodeJS")
-    Component(LocationsComponent, "Компонент управления локациями", "NodeJS")
+    Component(LocationsController, "Контроллер управления локациями", "NestJS Rest Controller")
+    Component(LocationsService, "Сервис управления локациями", "NestJS")
+    Component(LocationsComponent, "Компонент управления локациями", "NestJS")
 
     ' Привязка модуля к локациям
-    Component(LModulesConnectController, "Контроллер привязки модулей к локациям", "NodeJS Rest Controller")
-    Component(LModulesConnectService, "Сервис привязки модулей к локациям", "NodeJS")
-    Component(LModulesConnectComponent, "Компонент привязки модулей к локациям", "NodeJS")
+    Component(LModulesConnectController, "Контроллер привязки модулей к локациям", "NestJS Rest Controller")
+    Component(LModulesConnectService, "Сервис привязки модулей к локациям", "NestJS")
+    Component(LModulesConnectComponent, "Компонент привязки модулей к локациям", "NestJS")
 
     ' Привязка устройств к локациям
-    Component(LDevicesConnectController, "Контроллер привязки устройств к локациям", "NodeJS Rest Controller")
-    Component(LDevicesConnectService, "Сервис привязки устройств к локациям", "NodeJS")
-    Component(LDevicesConnectComponent, "Компонент привязки устройств к локациям", "NodeJS")
+    Component(LDevicesConnectController, "Контроллер привязки устройств к локациям", "NestJS Rest Controller")
+    Component(LDevicesConnectService, "Сервис привязки устройств к локациям", "NestJS")
+    Component(LDevicesConnectComponent, "Компонент привязки устройств к локациям", "NestJS")
 }
 
 ' Связи контейнера администрирования домов

@@ -11,39 +11,39 @@ Container(broker, "Брокер сообщений", "Kafka", "Хранит ин
 ' Контейнер администрирования пользователей
 Container_Boundary(ScenariosContainer, "Администрирование пользовательских сценариев") {
     ' Управление пользовательскими сценариями
-    Component(ScenariosController, "Контроллер управления пользовательскими сценариями", "NodeJS Rest Controller")
-    Component(ScenariosService, "Сервис управления пользовательскими сценариями", "NodeJS")
-    Component(ScenariosComponent, "Компонент управления пользовательскими сценариями", "NodeJS")
+    Component(ScenariosController, "Контроллер управления пользовательскими сценариями", "NestJS Rest Controller")
+    Component(ScenariosService, "Сервис управления пользовательскими сценариями", "NestJS")
+    Component(ScenariosComponent, "Компонент управления пользовательскими сценариями", "NestJS")
 
     ' Запуск пользовательских сценариев
-    Component(ScenariosRunController, "Контроллер запуска пользовательских сценариев", "NodeJS Rest Controller")
-    Component(ScenariosRunService, "Сервис запуска пользовательских сценариев", "NodeJS")
-    Component(ScenariosRunComponent, "Компонент запуска пользовательских сценариев", "NodeJS")
+    Component(ScenariosRunController, "Контроллер запуска пользовательских сценариев", "NestJS Rest Controller")
+    Component(ScenariosRunService, "Сервис запуска пользовательских сценариев", "NestJS")
+    Component(ScenariosRunComponent, "Компонент запуска пользовательских сценариев", "NestJS")
 
     ' Привязка домов к пользовательским сценариям
-    Component(HousesConnectController, "Контроллер привязки домов к пользовательским сценариям", "NodeJS Rest Controller")
-    Component(HousesConnectService, "Сервис привязки домов к пользовательским сценариям", "NodeJS")
-    Component(HousesConnectComponent, "Компонент привязки домов к пользовательским сценариям", "NodeJS")
+    Component(HousesConnectController, "Контроллер привязки домов к пользовательским сценариям", "NestJS Rest Controller")
+    Component(HousesConnectService, "Сервис привязки домов к пользовательским сценариям", "NestJS")
+    Component(HousesConnectComponent, "Компонент привязки домов к пользовательским сценариям", "NestJS")
 
     ' Привязка локаций к пользовательским сценариям
-    Component(LocationsConnectController, "Контроллер привязки локаций к пользовательским сценариям", "NodeJS Rest Controller")
-    Component(LocationsConnectService, "Сервис привязки локаций к пользовательским сценариям", "NodeJS")
-    Component(LocationsConnectComponent, "Компонент привязки локаций к пользовательским сценариям", "NodeJS")
+    Component(LocationsConnectController, "Контроллер привязки локаций к пользовательским сценариям", "NestJS Rest Controller")
+    Component(LocationsConnectService, "Сервис привязки локаций к пользовательским сценариям", "NestJS")
+    Component(LocationsConnectComponent, "Компонент привязки локаций к пользовательским сценариям", "NestJS")
 
     ' Привязка модулей к пользовательским сценариям
-    Component(ModulesConnectController, "Контроллер привязки модулей к пользовательским сценариям", "NodeJS Rest Controller")
-    Component(ModulesConnectService, "Сервис привязки модулей к пользовательским сценариям", "NodeJS")
-    Component(ModulesConnectComponent, "Компонент привязки модулей к пользовательским сценариям", "NodeJS")
+    Component(ModulesConnectController, "Контроллер привязки модулей к пользовательским сценариям", "NestJS Rest Controller")
+    Component(ModulesConnectService, "Сервис привязки модулей к пользовательским сценариям", "NestJS")
+    Component(ModulesConnectComponent, "Компонент привязки модулей к пользовательским сценариям", "NestJS")
 
     ' Привязка устройсв к пользовательским сценариям
-    Component(DevicesConnectController, "Контроллер привязки устройсв к пользовательским сценариям", "NodeJS Rest Controller")
-    Component(DevicesConnectService, "Сервис привязки устройсв к пользовательским сценариям", "NodeJS")
-    Component(DevicesConnectComponent, "Компонент привязки устройсв к пользовательским сценариям", "NodeJS")
+    Component(DevicesConnectController, "Контроллер привязки устройсв к пользовательским сценариям", "NestJS Rest Controller")
+    Component(DevicesConnectService, "Сервис привязки устройсв к пользовательским сценариям", "NestJS")
+    Component(DevicesConnectComponent, "Компонент привязки устройсв к пользовательским сценариям", "NestJS")
 
     ' Привязка пользователей к пользовательским сценариям
-    Component(UsersConnectController, "Контроллер привязки пользователей к пользовательским сценариям", "NodeJS Rest Controller")
-    Component(UsersConnectService, "Сервис привязки пользователей к пользовательским сценариям", "NodeJS")
-    Component(UsersConnectComponent, "Компонент привязки пользователей к пользовательским сценариям", "NodeJS")
+    Component(UsersConnectController, "Контроллер привязки пользователей к пользовательским сценариям", "NestJS Rest Controller")
+    Component(UsersConnectService, "Сервис привязки пользователей к пользовательским сценариям", "NestJS")
+    Component(UsersConnectComponent, "Компонент привязки пользователей к пользовательским сценариям", "NestJS")
 }
 
 ' Связи управления пользовательскими сценариями

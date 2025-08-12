@@ -31,7 +31,7 @@ services:
       postgres:
         condition: service_healthy
       kafka:
-        condition: service_started #todo переделать на healthy
+        condition: service_started
     environment:
       - PORT=8083
       - DB_HOST=postgres
@@ -54,7 +54,7 @@ services:
       postgres:
         condition: service_healthy
       kafka:
-        condition: service_started #todo переделать на healthy
+        condition: service_started
     environment:
       - PORT=8081
       - DB_HOST=postgres
@@ -66,7 +66,6 @@ services:
     restart: unless-stopped
     networks:
       - smarthome-network
-  ## TODO доделать кафку
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
     environment:

@@ -9,33 +9,31 @@ ContainerDb(db, "База данных", "PostgreSql 16", "Хранит инфо
 Container(broker, "Брокер сообщений", "Kafka", "Хранит информацию о переданных командах устройствам")
 Container_Ext(UserDevicesSystem, "Устройства умного дома пользователя")
 
-' @todo Возможно добавить сюда сервис состояния устройств, который их будет опрашивать, но вообще тут есть похожий
-' и у нас есть сервис телеметрии еще
-
 ' Контейнер администрирования устройств
 Container_Boundary(DevicesContainer, "Администрирование устройств") {
     ' Управление устройствами
-    Component(DevicesController, "Контроллер управления устройствами", "NodeJS Rest Controller")
-    Component(DevicesService, "Сервис управления устройствами", "NodeJS")
-    Component(DevicesComponent, "Компонент управления устройствами", "NodeJS")
+    Component(DevicesController, "Контроллер управления устройствами", "NestJS Rest Controller")
+    Component(DevicesService, "Сервис управления устройствами", "NestJS")
+    Component(DevicesComponent, "Компонент управления устройствами", "NestJS")
 
     ' Администрирование устройств
-    Component(FunctionalController, "Контроллер управления функционалом устройства", "NodeJS Rest Controller")
-    Component(FunctionalService,  "Сервис управления функционалом устройства", "NodeJS")
-    Component(FunctionalComponent,  "Компонент управления функционалом устройства", "NodeJS")
+    Component(FunctionalController, "Контроллер управления функционалом устройства", "NestJS Rest Controller")
+    Component(FunctionalConsumer, "Потребитель (Consumer) управления функционалом устройства", "NestJS Rest Controller", "Обрабатывает события вызова функционала устройств")
+    Component(FunctionalService,  "Сервис управления функционалом устройства", "NestJS")
+    Component(FunctionalComponent,  "Компонент управления функционалом устройства", "NestJS")
 }
 
 ' Контейнер администрирования модулей
 Container_Boundary(ModulesContainer, "Администрирование модулей") {
     ' Управление устройствами
-    Component(ModulesController, "Контроллер управления модулями", "NodeJS Rest Controller")
-    Component(ModulesService, "Сервис управления модулями", "NodeJS")
-    Component(ModulesComponent, "Компонент управления модулями", "NodeJS")
+    Component(ModulesController, "Контроллер управления модулями", "NestJS Rest Controller")
+    Component(ModulesService, "Сервис управления модулями", "NestJS")
+    Component(ModulesComponent, "Компонент управления модулями", "NestJS")
 
     ' Привязка устройств к модулям
-    Component(ModulesConnectController, "Контроллер привязки устройств к модулям", "NodeJS Rest Controller")
-    Component(ModulesConnectService, "Сервис привязки устройств к модулям", "NodeJS")
-    Component(ModulesConnectComponent, "Компонент привязки устройств к модулям", "NodeJS")
+    Component(ModulesConnectController, "Контроллер привязки устройств к модулям", "NestJS Rest Controller")
+    Component(ModulesConnectService, "Сервис привязки устройств к модулям", "NestJS")
+    Component(ModulesConnectComponent, "Компонент привязки устройств к модулям", "NestJS")
 }
 
 ' Связи контейнера администрирования устройств
@@ -46,6 +44,7 @@ Rel(DevicesComponent, db, "Данные об устройствах")
 
 Rel(APIGateway, FunctionalController, "Делает запросы управления функционалом устройств")
 Rel(FunctionalController, FunctionalService, "Вызывает бизнес-логику")
+Rel(FunctionalConsumer, FunctionalService, "Вызывает бизнес-логику")
 Rel(FunctionalService, FunctionalComponent, "Читает/записывает/удаляет данные о функционале устройств и вызывает его срабатывание")
 Rel(FunctionalComponent, UserDevicesSystem, "Запросы управления функционалом устройств")
 Rel(FunctionalComponent, db, "Данные о функционале устройств")
@@ -62,6 +61,6 @@ Rel(ModulesConnectService, ModulesConnectComponent, "Читает/записыв
 Rel(ModulesConnectComponent, db, "Данные о связи устройств с модулями")
 
 ' Связи брокера
-Rel(broker, FunctionalController, "Команды для запуска")
+Rel(broker, FunctionalConsumer, "События вызова функционала устройств")
 
 @endmul

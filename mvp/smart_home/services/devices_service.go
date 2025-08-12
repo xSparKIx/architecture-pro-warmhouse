@@ -19,6 +19,7 @@ type DevicesService struct {
 type DeviceResponse struct {
 	Id           string    `json:"id"`
 	Name         string    `json:"name"`
+	Type         string    `json:"type"`
 	SerialNumber string    `json:"serial_number"`
 	Status       string    `json:"status"`
 	CreatedAt    time.Time `json:"createdAt"`

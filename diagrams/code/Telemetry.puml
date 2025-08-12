@@ -1,34 +1,43 @@
-@startuml
-title FitLife Membership Management Code Diagram
+@startuml Telemetry code
+title Диаграмма кода контроллера записи телеметрией
 
-top to bottom direction
-
-!include ../templates/C4_Component.puml
-
-class User {
-  +String name
-  +String email
-  +List<Membership> memberships
-  +void register()
-  +void login()
+' Контроллер управления телеметрией
+class TelemetryController {
+  +telemetryService: TelemetryService
+  +create(createTelemetryDto: CreateTelemetryDto): Promise<Telemetry>
+  +remove(id: string): Promise<DeleteResult>
+  +getByDeviceId(deviceId: string): Promise<Telemetry>
+  +get(options: Record<string, any>): Promise<Telemetry[]>
 }
 
-class Membership {
-  +String type
-  +Date startDate
-  +Date endDate
-  +void activate()
-  +void cancel()
+' Сервис управления телеметрией
+class TelemetryService {
+  +telemetryRepository: Repository<Telemetry>
+  +create(createTelemetryDto: CreateTelemetryDto): Promise<Telemetry>
+  +remove(id: string): Promise<DeleteResult>
+  +getByDeviceId(deviceId: string): Promise<Telemetry>
+  +getByDeviceIds(ids: string[]): Promise<Telemetry[]>
 }
 
-class Schedule {
-  +Date date
-  +String activity
-  +void addActivity()
-  +void removeActivity()
+' DTO создания телеметрии
+class CreateTelemetryDto {
+  +deviceId: string
+  +data: Record<string, any>
 }
 
-User "1" -- "0..*" Membership : has
-Membership "1" -- "0..*" Schedule : includes
+' Сущность телеметрии
+class Telemetry {
+  +id: number;
+  +deviceId: string;
+  +data: Record<string, any>;
+  +createdAt: Date;
+  +updatedAt: Date;
+}
+
+TelemetryController --> TelemetryService : зависит от >
+TelemetryController --> CreateTelemetryDto : использует >
+TelemetryService --> CreateTelemetryDto : использует >
+TelemetryController --> Telemetry : использует >
+TelemetryService --> Telemetry : использует >
 
 @enduml

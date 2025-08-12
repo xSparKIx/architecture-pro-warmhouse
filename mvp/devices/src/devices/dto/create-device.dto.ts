@@ -14,8 +14,13 @@ export class CreateDeviceDto {
 
     @IsString()
     @IsNotEmpty()
+    readonly type: string;
+
+    @IsString()
+    @IsNotEmpty()
     readonly serial_number: string;
 
     @IsString()
+    @IsOptional()
     readonly status: 'active'|'inactive'|'error' = 'active'
 }

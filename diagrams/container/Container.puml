@@ -75,7 +75,7 @@ Rel(APIGateway, UsersContainer, "Запросы управления польз�
 Rel(APIGateway, HousesContainer, "Запросы управления домами", "JSON")
 Rel(APIGateway, LocationsContainer, "Запросы управления локациями", "JSON")
 Rel(APIGateway, ScenariosContainer, "Запросы урпавления пользовательскими сценариями", "JSON")
-Rel(APIGateway, AnaliticContainer, "Данные для аналитики и отчетности")
+Rel(APIGateway, AnaliticContainer, "Запросы на построение аналитик и отчетов", "JSON")
 
 ' Связи системы управления телеметрией
 Rel(TelemetryContainer, UserDevicesSystem, "Данные от устройств умного дома")
