@@ -49,4 +49,12 @@ export class DevicesController {
   findAll() {
     return this.devicesService.findAll();
   }
+
+  /**
+   * Метод получения устройства по UUID
+   */
+  @Get(":id")
+  findById(@Param('id') id: string) {
+    return this.devicesService.findById(id);
+  }
 }

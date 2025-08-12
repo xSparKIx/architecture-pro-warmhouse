@@ -10,7 +10,7 @@ export class CreateDeviceDto {
 
     @IsString()
     @IsOptional()
-    readonly description: string;
+    readonly description: string = '';
 
     @IsString()
     @IsNotEmpty()

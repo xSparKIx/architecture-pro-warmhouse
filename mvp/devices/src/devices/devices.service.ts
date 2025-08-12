@@ -43,4 +43,12 @@ export class DevicesService {
     findAll() {
       return this.deviceRepository.find();
     }
+
+    /**
+     * Метод получения устройства по UUID
+     * @param id UUID Устройства
+     */
+    findById(id: string) {
+        return this.deviceRepository.findOne({ where: { id } });
+    }
 }

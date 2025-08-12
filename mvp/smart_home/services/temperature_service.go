@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,16 +14,14 @@ type TemperatureService struct {
 	HTTPClient *http.Client
 }
 
-// TemperatureResponse represents the response from the temperature API
-type TemperatureResponse struct {
-	Value       float64   `json:"value"`
-	Unit        string    `json:"unit"`
-	Timestamp   time.Time `json:"timestamp"`
-	Location    string    `json:"location"`
-	Status      string    `json:"status"`
-	SensorID    string    `json:"sensor_id"`
-	SensorType  string    `json:"sensor_type"`
-	Description string    `json:"description"`
+// Структура с информацией о телеметрии устройства
+type TelemetryResponse struct {
+	DeviceId string                 `json:"deviceId"`
+	Data     map[string]interface{} `json:"data"`
+}
+
+type TelemetryGetParams struct {
+	Id []string `json:"id"`
 }
 
 // NewTemperatureService creates a new temperature service
@@ -35,46 +34,56 @@ func NewTemperatureService(baseURL string) *TemperatureService {
 	}
 }
 
-// GetTemperature fetches temperature data for a specific location
-func (s *TemperatureService) GetTemperature(location string) (*TemperatureResponse, error) {
-	url := fmt.Sprintf("%s/get-telemetry?location=%s", s.BaseURL, location)
+// Обновление телеметрии по UUID устройства
+func (s *TemperatureService) UpdateByDeviceId(id string) (*TelemetryResponse, error) {
+	url := fmt.Sprintf("%s/get-telemetry/%s", s.BaseURL, id)
 
 	resp, err := s.HTTPClient.Get(url)
+
 	if err != nil {
-		return nil, fmt.Errorf("error fetching temperature data: %w", err)
+		return nil, fmt.Errorf("во время получения телеметрии устройсва %s произошла ошибка %w", id, err)
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("некорректный статус ответа %d", resp.StatusCode)
 	}
 
-	var temperatureResp TemperatureResponse
-	if err := json.NewDecoder(resp.Body).Decode(&temperatureResp); err != nil {
+	var telemetryData TelemetryResponse
+
+	if err := json.NewDecoder(resp.Body).Decode(&telemetryData); err != nil {
 		return nil, fmt.Errorf("error decoding temperature response: %w", err)
 	}
 
-	return &temperatureResp, nil
+	return &telemetryData, nil
 }
 
-// GetTemperatureByID fetches temperature data for a specific sensor ID
-func (s *TemperatureService) GetTemperatureByID(sensorID string) (*TemperatureResponse, error) {
-	url := fmt.Sprintf("%s/get-telemetry/%s", s.BaseURL, sensorID)
+// Получение температуры по uuid устройств
+func (s *TemperatureService) GetByDeviceIds(params TelemetryGetParams) (*[]TelemetryResponse, error) {
+	url := fmt.Sprintf("%s/telemetry/last", s.BaseURL)
 
-	resp, err := s.HTTPClient.Get(url)
+	jsonData, err := json.Marshal(params)
+
 	if err != nil {
-		return nil, fmt.Errorf("error fetching temperature data: %w", err)
+		return nil, fmt.Errorf("ошибка при формировании параметров %w", err)
 	}
-	defer resp.Body.Close()
+
+	resp, err := s.HTTPClient.Post(url, "application/json", bytes.NewBuffer(jsonData))
+
+	if err != nil {
+		return nil, fmt.Errorf("вовремя получения телеметрии устройств произошла ошибка: %w", err)
+	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("некорректный статус ответа: %d", resp.StatusCode)
 	}
 
-	var temperatureResp TemperatureResponse
-	if err := json.NewDecoder(resp.Body).Decode(&temperatureResp); err != nil {
+	var telemetryData []TelemetryResponse
+
+	if err := json.NewDecoder(resp.Body).Decode(&telemetryData); err != nil {
 		return nil, fmt.Errorf("error decoding temperature response: %w", err)
 	}
 
-	return &temperatureResp, nil
+	return &telemetryData, nil
 }

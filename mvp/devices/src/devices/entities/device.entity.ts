@@ -20,7 +20,7 @@ export class Device {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true, default: '' })
   description: string;
 
   @Column()

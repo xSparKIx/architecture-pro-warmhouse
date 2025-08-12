@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { CreateTelemetryDto } from "./dto/create-telemetry.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Telemetry } from "./entities/telemetry.entity";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 @Injectable()
 export class TelemetryService {
@@ -15,5 +15,28 @@ export class TelemetryService {
     create(createTelemetryDto: CreateTelemetryDto) {
         const data = this.telemetryRepository.create(createTelemetryDto);
         return this.telemetryRepository.save(data);
+    }
+
+    /**
+     * Метод получения последней телеметрии по uuid устройства
+     */
+    getByDeviceId(deviceId: string) {
+        return this.telemetryRepository.findOne({
+            where: { deviceId },
+            order: { createdAt: 'desc' },
+        })
+    }
+
+    /**
+     * Метод получения телеметрии
+     */
+    getByDeviceIds(deviceIds: string[] = []) {
+        return this.telemetryRepository
+            .createQueryBuilder('telemetry')
+            .distinctOn(['telemetry.deviceId'])
+            .where('telemetry.deviceId IN (:...deviceIds)', { deviceIds })
+            .orderBy('telemetry.deviceId')
+            .addOrderBy('telemetry.createdAt', 'DESC')
+            .getMany();
     }
 }

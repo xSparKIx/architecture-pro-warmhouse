@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, Param, Post } from "@nestjs/common";
 import { CreateTelemetryDto } from "./dto/create-telemetry.dto";
 import { TelemetryService } from "./telemetry.service";
 
@@ -15,5 +15,23 @@ export class TelemetryController {
     @Post()
     create(@Body() createTelemetryDto: CreateTelemetryDto) {
         return this.telemetryService.create(createTelemetryDto);
+    }
+
+    /**
+     * Метод получения последней телеметрии по UUID устройства
+     */
+    @Get('/last/:deviceId')
+    getByDeviceId(@Param('deviceId') deviceId: string) {
+        return this.telemetryService.getByDeviceId(deviceId);
+    }
+
+    /**
+     * Метод получения последней телеметрии по uuid устройств
+     */
+    @Post("/last")
+    @HttpCode(200)
+    get(@Body() options: Record<string, any>) {
+        const ids = options.id || [];
+        return this.telemetryService.getByDeviceIds(ids);
     }
 }
